@@ -9,5 +9,10 @@ module EasyMonitor
         expect(response.code).to eq('204')
       end
     end
+
+    describe 'GET redis_alive' do
+      it 'responds with 204 when hit' do
+      end
+    end
   end
 end
