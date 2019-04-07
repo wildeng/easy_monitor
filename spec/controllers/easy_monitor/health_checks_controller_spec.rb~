@@ -1,0 +1,7 @@
+require 'rails_helper'
+
+module EasyMonitor
+  RSpec.describe HealthChecksController, type: :controller do
+
+  end
+end
