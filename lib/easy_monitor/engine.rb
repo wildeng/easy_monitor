@@ -2,7 +2,14 @@ module EasyMonitor
   class Engine < ::Rails::Engine
     isolate_namespace EasyMonitor
 
-    mattr_accessor :redis_url
+    class << self
+      mattr_accessor :redis_url
+      mattr_accessor :redis_port
+    end
+
+    def self.setup(&block)
+      yield self
+    end
 
     config.generators do |g|
       g.test_framework :rspec
