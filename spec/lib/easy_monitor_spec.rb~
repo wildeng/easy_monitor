@@ -1,7 +1,0 @@
-require 'rails_helper'
-
-RSpec.describe EasyMonitor do
-  before do
-    EasyMonitor.configuration = EasyMonitor::Configuration.new
-  end
-end

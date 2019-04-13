@@ -26,11 +26,13 @@ Gem::Specification.new do |spec|
   spec.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
   spec.add_dependency 'rails', '~> 5.2.3'
+  spec.add_dependency 'redis'
 
   spec.add_development_dependency 'factory_bot_rails'
+  spec.add_development_dependency 'mock_redis'
+  spec.add_development_dependency 'pry-rails'
   spec.add_development_dependency 'rspec-rails'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-performance'
   spec.add_development_dependency 'sqlite3'
-  spec.add_development_dependency 'mock_redis'
 end

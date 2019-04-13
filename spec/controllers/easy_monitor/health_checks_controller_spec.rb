@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'mock_redis'
 
 module EasyMonitor
   RSpec.describe HealthChecksController, type: :controller do
@@ -10,8 +11,19 @@ module EasyMonitor
       end
     end
 
-    describe 'GET redis_alive' do
-      it 'responds with 204 when hit' do
+    context 'when checking a Redis server' do
+      describe 'GET redis_alive' do
+        it 'responds with 204 when hit' do
+          redis = MockRedis.new
+          allow(Redis).to receive(:new).and_return(redis)
+          get :redis_alive
+          expect(response.code).to eq('204')
+        end
+
+        it 'respond with request_timeout when not working' do
+          get :redis_alive
+          expect(response.code).to eq('408')
+        end
       end
     end
   end

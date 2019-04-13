@@ -1,8 +1,17 @@
 # EasyMonitor
-Short description and motivation.
+Easy monitor is a simple to use and install monitoring engine for Rails applications.
+Its main goal is to add some endpoints that should give the heartbeat of the application,
+check if the configured Redis server or Sidekiq are alive.
 
 ## Usage
-How to use my plugin.
+After installing it, the plugin will add some namespaced routes that you can use to monitor your services.
+Eg.
+
+To check if your application is working:
+
+```bash
+curl -v http://localhost:3000/easy_monitor/health_checks/alive
+```
 
 ## Installation
 Add this line to your application's Gemfile:

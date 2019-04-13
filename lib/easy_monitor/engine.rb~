@@ -1,5 +1,0 @@
-module EasyMonitor
-  class Engine < ::Rails::Engine
-    isolate_namespace EasyMonitor
-  end
-end
