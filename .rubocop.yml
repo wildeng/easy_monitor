@@ -1,0 +1,7 @@
+AllCops:
+  Exclude:
+    - 'spec/dummy/db/**/*'
+    - 'spec/dummy/config/**/*'
+    - 'spec/script/**/*'
+    - 'bin/{rails,rake}'
+    - !ruby/regexp /old_and_unused\.rb$/

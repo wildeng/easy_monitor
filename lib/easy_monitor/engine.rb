@@ -5,9 +5,13 @@ module EasyMonitor
     class << self
       mattr_accessor :redis_url
       mattr_accessor :redis_port
+      mattr_accessor :user_class
+
+      self.redis_url = '127.0.0.1'
+      self.redis_port = 6379
     end
 
-    def self.setup(&block)
+    def self.setup
       yield self
     end
 

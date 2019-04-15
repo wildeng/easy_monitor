@@ -20,14 +20,13 @@ module EasyMonitor
       head :request_timeout
     end
 
-    def sidekiq_alive
-    end
+    def sidekiq_alive; end
 
     private
 
     def basic_authentication
       # TODO: implements a basic authentication related to the calling app
-      return true
+      true
     end
 
     def connect_to_redis
