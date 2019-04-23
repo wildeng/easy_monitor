@@ -30,11 +30,7 @@ module EasyMonitor
     end
 
     def connect_to_redis
-      redis = Redis.new(
-        host: EasyMonitor::Engine.redis_url,
-        port: EasyMonitor::Engine.redis_port
-      )
-      redis.ping
+      EasyMonitor.redis_ping
     end
   end
 end

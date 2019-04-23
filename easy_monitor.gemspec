@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'rails', '~> 5.2.3'
   spec.add_dependency 'redis'
+  spec.add_dependency 'sidekiq'
 
   spec.add_development_dependency 'factory_bot_rails'
   spec.add_development_dependency 'mock_redis'

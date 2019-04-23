@@ -1,14 +1,24 @@
 module EasyMonitor
   class Engine < ::Rails::Engine
     isolate_namespace EasyMonitor
+    DEFAULT_SIDEKIQ_PROCESS_NUMBERS = 1.freeze
+    DEFAULT_SIDEKIQ_JOB_THRESHOLD = 50.freeze
+    DEFAULT_REDIS_URL = '127.0.0.1'.freeze
+    DEFAUL_REDIS_PORT = 6379.freeze
 
     class << self
       mattr_accessor :redis_url
       mattr_accessor :redis_port
       mattr_accessor :user_class
+      mattr_accessor :sidekiq_process_numbers
+      mattr_accessor :sidekiq_job_threshold
+      mattr_accessor :use_sidekiq
 
-      self.redis_url = '127.0.0.1'
-      self.redis_port = 6379
+      self.redis_url = DEFAULT_REDIS_URL
+      self.redis_port = DEFAUL_REDIS_PORT
+      self.sidekiq_process_numbers = DEFAULT_SIDEKIQ_PROCESS_NUMBERS
+      self.sidekiq_job_threshold = DEFAULT_SIDEKIQ_JOB_THRESHOLD
+      self.use_sidekiq = false
     end
 
     def self.setup

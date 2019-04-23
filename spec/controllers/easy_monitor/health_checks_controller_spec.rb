@@ -13,18 +13,26 @@ module EasyMonitor
 
     context 'when checking a Redis server' do
       describe 'GET redis_alive' do
-        it 'responds with 204 when hit' do
-          redis = MockRedis.new
-          allow(Redis).to receive(:new).and_return(redis)
-          get :redis_alive
-          expect(response.code).to eq('204')
-        end
-
         it 'respond with request_timeout when not working' do
           get :redis_alive
           expect(response.code).to eq('408')
         end
+
+        it 'responds with 204 when hit' do
+          redis = MockRedis.new
+          allow(
+            EasyMonitor::Util::Connectors::RedisConnector
+          ).to receive(:instance).and_return(redis)
+          get :redis_alive
+          expect(response.code).to eq('204')
+        end
       end
+    end
+
+    context 'when checking Sidekiq' do
+      describe 'GET all jobs' do
+      end
+
     end
   end
 end
