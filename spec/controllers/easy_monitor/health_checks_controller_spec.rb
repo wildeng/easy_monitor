@@ -30,9 +30,21 @@ module EasyMonitor
     end
 
     context 'when checking Sidekiq' do
-      describe 'GET all jobs' do
+      before do
+        Sidekiq::Testing.fake!
       end
 
+      describe 'GET Sidekiq alive' do
+        it 'responds with request_timeout when not working' do
+          get :sidekiq_alive
+          expect(response.code).to eq('408')
+        end
+
+        it 'responds with 204 when alive' do
+          get :sidekiq_alive
+          expect(response.code).to eq('204')
+        end
+      end
     end
   end
 end

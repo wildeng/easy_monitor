@@ -1,6 +1,6 @@
 require_dependency 'easy_monitor/application_controller'
 require 'redis'
-
+#:nodoc
 module EasyMonitor
   class HealthChecksController < ApplicationController
     protect_from_forgery
@@ -20,7 +20,14 @@ module EasyMonitor
       head :request_timeout
     end
 
-    def sidekiq_alive; end
+    def sidekiq_alive
+      head :no_content if sidekiq_alive
+    rescue StandardError
+      logger.error(
+        'Sidekiq is not responding'
+      )
+      head :request_timeout
+    end
 
     private
 
@@ -31,6 +38,10 @@ module EasyMonitor
 
     def connect_to_redis
       EasyMonitor.redis_ping
+    end
+
+    def connect_to_sidekiq
+      EasyMonitor.sidekiq_alive?
     end
   end
 end

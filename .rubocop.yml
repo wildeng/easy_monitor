@@ -1,7 +1,15 @@
 AllCops:
   Exclude:
-    - 'spec/dummy/db/**/*'
-    - 'spec/dummy/config/**/*'
+    - 'spec/dummy/**/*'
     - 'spec/script/**/*'
     - 'bin/{rails,rake}'
     - !ruby/regexp /old_and_unused\.rb$/
+
+Metrics/BlockLength:
+  Max: 50
+
+Metrics/LineLength:
+  Max: 100
+
+Style/Documentation:
+  Enabled: false
