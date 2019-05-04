@@ -4,7 +4,10 @@ module EasyMonitor
     DEFAULT_SIDEKIQ_PROCESS_NUMBERS = 1
     DEFAULT_SIDEKIQ_JOB_THRESHOLD = 50
     DEFAULT_REDIS_URL = '127.0.0.1'.freeze
-    DEFAUL_REDIS_PORT = 6379
+    DEFAULT_REDIS_PORT = 6379
+    DEFAULT_MAX_QUEUE_NUMBER = 250
+    DEFAULT_MAX_LATENCY = 600
+
 
     class << self
       mattr_accessor :redis_url
@@ -13,12 +16,16 @@ module EasyMonitor
       mattr_accessor :sidekiq_process_numbers
       mattr_accessor :sidekiq_job_threshold
       mattr_accessor :use_sidekiq
+      mattr_accessor :max_latency
+      mattr_accessor :max_queue_number
 
       self.redis_url = DEFAULT_REDIS_URL
-      self.redis_port = DEFAUL_REDIS_PORT
+      self.redis_port = DEFAULT_REDIS_PORT
       self.sidekiq_process_numbers = DEFAULT_SIDEKIQ_PROCESS_NUMBERS
       self.sidekiq_job_threshold = DEFAULT_SIDEKIQ_JOB_THRESHOLD
       self.use_sidekiq = false
+      self.max_latency = DEFAULT_MAX_LATENCY
+      self.max_queue_number = DEFAULT_MAX_QUEUE_NUMBER
     end
 
     def self.setup

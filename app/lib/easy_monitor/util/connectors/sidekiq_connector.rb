@@ -6,14 +6,17 @@ module EasyMonitor
     module Connectors
       require 'singleton'
       require 'redis'
+      require 'sidekiq/api'
 
       class SidekiqConnector
         include Singleton
 
+        # Returns true if alive otherwise raises StandarError
+        #
+        # @return [Boolean]
         def alive?
           return false if high_latency?
           return false if high_queue_number?
-
           is_processing?
         end
 
@@ -28,14 +31,15 @@ module EasyMonitor
         end
 
         def high_latency?
-          latency > 600
+          latency > EasyMonitor::Engine.max_latency
         end
 
         def high_queue_number?
-          stats.enqueued > 250
+          stats.enqueued > EasyMonitor::Engine.max_queue_number
         end
 
         def processing?
+          binding.pry
           stats.processes_size > 0
         end
       end

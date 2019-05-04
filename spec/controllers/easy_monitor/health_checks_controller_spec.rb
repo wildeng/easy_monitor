@@ -30,8 +30,11 @@ module EasyMonitor
     end
 
     context 'when checking Sidekiq' do
-      before do
-        Sidekiq::Testing.fake!
+
+      let(:alive) do
+        allow_any_instance_of(
+          EasyMonitor::Util::Connectors::SidekiqConnector
+        ).to receive(:alive?).and_return(true)
       end
 
       describe 'GET Sidekiq alive' do
@@ -41,6 +44,7 @@ module EasyMonitor
         end
 
         it 'responds with 204 when alive' do
+          alive
           get :sidekiq_alive
           expect(response.code).to eq('204')
         end

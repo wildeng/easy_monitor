@@ -21,12 +21,12 @@ module EasyMonitor
     end
 
     def sidekiq_alive
-      head :no_content if sidekiq_alive
+      head :no_content if connect_to_sidekiq
     rescue StandardError
       logger.error(
         'Sidekiq is not responding'
       )
-      head :request_timeout
+    head :request_timeout
     end
 
     private
@@ -41,7 +41,8 @@ module EasyMonitor
     end
 
     def connect_to_sidekiq
-      EasyMonitor.sidekiq_alive?
+      raise StandardError unless EasyMonitor.sidekiq_alive?
+      true
     end
   end
 end

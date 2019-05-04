@@ -3,7 +3,7 @@ require 'rails_helper'
 module EasyMonitor
   module Util
     module Connectors
-      RSpec.describe RedmineConnector do
+      RSpec.describe SidekiqConnector do
         context 'when initialising' do
           describe 'creating instances' do
             it 'returns only one instance' do
