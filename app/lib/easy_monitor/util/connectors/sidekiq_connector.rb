@@ -11,13 +11,14 @@ module EasyMonitor
       class SidekiqConnector
         include Singleton
 
-        # Returns true if alive otherwise raises StandarError
+        # Returns true if alive otherwise raises an error
         #
-        # @return [Boolean]
+        # @return [boolean] true if Sidekiq checks are fine
         def alive?
-          return false if high_latency?
-          return false if high_queue_number?
-          is_processing?
+          raise HighLatencyError if high_latency?
+          raise HighQueueNumberError if high_queue_number?
+          raise StandarError unless processing?
+          true
         end
 
         private
@@ -39,7 +40,6 @@ module EasyMonitor
         end
 
         def processing?
-          binding.pry
           stats.processes_size > 0
         end
       end

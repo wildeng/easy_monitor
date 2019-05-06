@@ -8,7 +8,7 @@ module EasyMonitor
     DEFAULT_REDIS_PORT = 6379
     DEFAULT_MAX_QUEUE_NUMBER = 250
     DEFAULT_MAX_LATENCY = 600
-    DEFAULT_LOG_PATH = 'log/easy_monitor.log'
+    DEFAULT_LOG_PATH = STDOUT
 
 
     class << self

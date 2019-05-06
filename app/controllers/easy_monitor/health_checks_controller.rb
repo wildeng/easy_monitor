@@ -6,8 +6,8 @@ module EasyMonitor
     protect_from_forgery
 
     before_action :basic_authentication
-
-    EasyMonitor::Logger.log.formatter = EasyMonitor::Util::Formatters::LogFormatter.new
+    logger = EasyMonitor::Logger.log
+    logger.formatter = EasyMonitor::Util::Formatters::LogFormatter.new
 
     def alive
       head :no_content
@@ -16,24 +16,28 @@ module EasyMonitor
     def redis_alive
       head :no_content if connect_to_redis
     rescue Redis::CannotConnectError
-      EasyMonitor::Logger.log.error(
+      logger.error(
         "Redis server at #{EasyMonitor::Engine.redis_url} is not responding"
       )
       head :request_timeout
-    rescue StandardError
-      EasyMonitor::Logger.log.error(
-        "An error occurred #{EasyMonitor::Engine.redis_url}"
+    rescue StandardError => e
+      logger.error(
+        "An error occurred #{EasyMonitor::Engine.redis_url} #{e.message}"
       )
       head :request_timeout
     end
 
     def sidekiq_alive
       head :no_content if connect_to_sidekiq
-    rescue StandardError
-      EasyMonitor::Logger.log.error(
-        'Sidekiq is not responding'
-      )
-    head :request_timeout
+    rescue EasyMonitor::Util::Errors::HighLatencyError
+      logger.error( 'Sidekiq is experiencing a high latency', 'Sidekiq::Queue' )
+      head :request_timeout
+    rescue EasyMonitor::Util::Errors::HighQueueNumberError
+      logger.error( 'Too many jobs enqueued in Sidekiq', 'Sidekiq::Queue' )
+      head :request_timeout
+    rescue StandardError => e
+      logger.error('Sidekiq is not responding')
+      head :request_timeout
     end
 
     private
@@ -48,8 +52,7 @@ module EasyMonitor
     end
 
     def connect_to_sidekiq
-      raise StandardError unless EasyMonitor.sidekiq_alive?
-      true
+      EasyMonitor.sidekiq_alive?
     end
   end
 end
