@@ -11,6 +11,10 @@ RSpec.describe EasyMonitor do
       it 'responds with default user class value' do
         expect(EasyMonitor::Engine.user_class).to eq(nil)
       end
+
+      it 'does not use sidekiq' do
+        expect(EasyMonitor::Engine.use_sidekiq).to eq(false)
+      end
     end
   end
 
@@ -21,6 +25,7 @@ RSpec.describe EasyMonitor do
           config.redis_url = '10.10.2.3'
           config.redis_port = 8080
           config.user_class = 'User'
+          config.use_sidekiq = true
         end
       end
       it 'responds with redis config' do
@@ -30,6 +35,10 @@ RSpec.describe EasyMonitor do
 
       it 'responds with user defined class' do
         expect(EasyMonitor::Engine.user_class).to eq('User')
+      end
+
+      it 'responds with use_sidekiq true' do
+        expect(EasyMonitor::Engine.use_sidekiq).to eq(true)
       end
     end
   end

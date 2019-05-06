@@ -36,7 +36,7 @@ module EasyMonitor
       logger.error( 'Too many jobs enqueued in Sidekiq', 'Sidekiq::Queue' )
       head :request_timeout
     rescue StandardError => e
-      logger.error('Sidekiq is not responding')
+      logger.error('Sidekiq is not responding or not set')
       head :request_timeout
     end
 

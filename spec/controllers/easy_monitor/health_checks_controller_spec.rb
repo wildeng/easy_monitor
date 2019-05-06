@@ -38,8 +38,9 @@ module EasyMonitor
       end
 
       describe 'GET Sidekiq alive' do
-        it 'responds with request_timeout when not working' do
+        it 'responds with request_timeout when not set or not working' do
           get :sidekiq_alive
+          expect(EasyMonitor::Engine.use_sidekiq).to eq(false)
           expect(response.code).to eq('408')
         end
 

@@ -15,13 +15,12 @@ module EasyMonitor
         #
         # @return [boolean] true if Sidekiq checks are fine
         def alive?
-          raise HighLatencyError if high_latency?
-          raise HighQueueNumberError if high_queue_number?
-          raise StandarError unless processing?
+          raise StandardError unless EasyMonitor::Engine.use_sidekiq
+          raise EasyMonitor::Util::Errors::HighLatencyError if high_latency?
+          raise EasyMonitor::Util::Errors::HighQueueNumberError if high_queue_number?
+          raise EasyMonitor::Util::Errors::StandarError unless processing?
           true
         end
-
-        private
 
         def latency
           @latency = Sidekiq::Queue.new.latency
