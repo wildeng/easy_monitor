@@ -7,15 +7,22 @@ module EasyMonitor
 
     before_action :basic_authentication
 
+    EasyMonitor::Logger.log.formatter = EasyMonitor::Util::Formatters::LogFormatter.new
+
     def alive
       head :no_content
     end
 
     def redis_alive
       head :no_content if connect_to_redis
-    rescue StandardError
-      logger.error(
+    rescue Redis::CannotConnectError
+      EasyMonitor::Logger.log.error(
         "Redis server at #{EasyMonitor::Engine.redis_url} is not responding"
+      )
+      head :request_timeout
+    rescue StandardError
+      EasyMonitor::Logger.log.error(
+        "An error occurred #{EasyMonitor::Engine.redis_url}"
       )
       head :request_timeout
     end
@@ -23,7 +30,7 @@ module EasyMonitor
     def sidekiq_alive
       head :no_content if connect_to_sidekiq
     rescue StandardError
-      logger.error(
+      EasyMonitor::Logger.log.error(
         'Sidekiq is not responding'
       )
     head :request_timeout

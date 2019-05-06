@@ -13,6 +13,34 @@ module EasyMonitor
               expect(one).to eq(two)
             end
           end
+
+          describe 'all defaults are set' do
+            let(:mock_redis) do
+              redis = MockRedis.new
+              allow(
+                EasyMonitor::Util::Connectors::RedisConnector.instance
+              ).to receive(:connection).and_return(redis)
+            end
+
+            it 'returns an error when redis is not available' do
+              expect { described_class.instance.connection.url }.to raise_error(
+                Redis::CannotConnectError
+              )
+              expect { described_class.instance.connection.host }.to raise_error(
+                Redis::CannotConnectError
+              )
+            end
+
+            it 'returns default url and port' do
+              mock_redis
+              expect(described_class.instance.connection.host).to eq(
+                EasyMonitor::Engine.redis_url
+              )
+              expect(described_class.instance.connection.port).to eq(
+                EasyMonitor::Engine.redis_port
+              )
+            end
+          end
         end
       end
     end

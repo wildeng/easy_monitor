@@ -10,6 +10,8 @@ module EasyMonitor
       class RedisConnector
         include Singleton
 
+        attr_reader :connection
+
         def initialize
           @connection = new_connection
         end
