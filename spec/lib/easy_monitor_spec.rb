@@ -2,6 +2,12 @@ require 'rails_helper'
 
 RSpec.describe EasyMonitor do
   context 'when default config' do
+    # cleanup Sidekiq confs
+    before do
+      EasyMonitor::Engine.setup do |config|
+        config.use_sidekiq = false
+      end
+    end
     describe '#configure' do
       it 'responds with redis default' do
         expect(EasyMonitor::Engine.redis_url).to eq('127.0.0.1')
@@ -12,7 +18,7 @@ RSpec.describe EasyMonitor do
         expect(EasyMonitor::Engine.user_class).to eq(nil)
       end
 
-      it 'does not use sidekiq' do
+      it 'does not use sidekiq by default' do
         expect(EasyMonitor::Engine.use_sidekiq).to eq(false)
       end
     end
