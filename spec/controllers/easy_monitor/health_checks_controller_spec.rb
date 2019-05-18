@@ -40,10 +40,38 @@ module EasyMonitor
         ).to receive(:alive?).and_return(true)
       end
 
+      let(:high_latency) do
+        allow_any_instance_of(
+          EasyMonitor::Util::Connectors::SidekiqConnector
+        ).to receive(:alive?).and_raise(
+          EasyMonitor::Util::Errors::HighLatencyError
+        )
+      end
+
+      let(:high_queue) do
+        allow_any_instance_of(
+          EasyMonitor::Util::Connectors::SidekiqConnector
+        ).to receive(:alive?).and_raise(
+          EasyMonitor::Util::Errors::HighQueueNumberError
+        )
+      end
+
       describe 'GET Sidekiq alive' do
         it 'responds with request_timeout when not set or not working' do
           get :sidekiq_alive
           expect(EasyMonitor::Engine.use_sidekiq).to eq(false)
+          expect(response.code).to eq('408')
+        end
+
+        it 'responds with request_timeout when high latency' do
+          high_latency
+          get :sidekiq_alive
+          expect(response.code).to eq('408')
+        end
+
+        it 'responds with request_timeout when high queue' do
+          high_queue
+          get :sidekiq_alive
           expect(response.code).to eq('408')
         end
 

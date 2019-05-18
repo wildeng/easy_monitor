@@ -30,10 +30,10 @@ module EasyMonitor
     def sidekiq_alive
       head :no_content if connect_to_sidekiq
     rescue EasyMonitor::Util::Errors::HighLatencyError
-      logger.error( 'Sidekiq is experiencing a high latency', 'Sidekiq::Queue' )
+      logger.error( 'Sidekiq is experiencing a high latency')
       head :request_timeout
     rescue EasyMonitor::Util::Errors::HighQueueNumberError
-      logger.error( 'Too many jobs enqueued in Sidekiq', 'Sidekiq::Queue' )
+      logger.error( 'Too many jobs enqueued in Sidekiq' )
       head :request_timeout
     rescue StandardError => e
       logger.error('Sidekiq is not responding or not set')
@@ -43,7 +43,7 @@ module EasyMonitor
     private
 
     def basic_authentication
-      # TODO: need to implement a clever way of authenticating the engine
+      # TODO: need to implement a clever way of
       true
     end
 
