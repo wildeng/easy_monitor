@@ -43,7 +43,7 @@ module EasyMonitor
     private
 
     def basic_authentication
-      # TODO: implements a basic authentication related to the calling app
+      # TODO: need to implement a clever way of authenticating the engine
       true
     end
 
