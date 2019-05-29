@@ -6,8 +6,6 @@ module EasyMonitor
     protect_from_forgery
 
     before_action :basic_authentication
-    logger = EasyMonitor::Logger.log
-    logger.formatter = EasyMonitor::Util::Formatters::LogFormatter.new
 
     def alive
       head :no_content
@@ -43,7 +41,7 @@ module EasyMonitor
     private
 
     def basic_authentication
-      # TODO: need to implement a clever way of
+      # TODO: need to implement a clever way of using app authentication
       true
     end
 

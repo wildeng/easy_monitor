@@ -1,3 +1,5 @@
+require 'easy_monitor/log/easy_monitor_logger'
+
 module EasyMonitor
   class Engine < ::Rails::Engine
     isolate_namespace EasyMonitor
@@ -35,6 +37,10 @@ module EasyMonitor
       yield self
     end
 
+    config.logger = EasyMonitor::Log::EasyMonitorLogger.new(
+      EasyMonitor::Engine.log_path
+    )
+    
     config.generators do |g|
       g.test_framework :rspec
       g.fixture_replacement :factory_bot # newly added code
