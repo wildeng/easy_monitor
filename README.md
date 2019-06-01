@@ -13,12 +13,12 @@ curl -v http://localhost:3000/easy_monitor/health_checks/alive
 ```
 To check if Redis is working:
 
-``bash
+```bash
 curl -v http://localhost:3000/easy_monitor/health_checks/redis_alive
 ```
 To check if Sidekiq is alive:
 
-``bash
+```bash
 curl -v http://localhost:3000/easy_monitor/health_checks/sidekiq_alive
 ```
 
