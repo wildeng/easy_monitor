@@ -1,14 +1,46 @@
+require 'easy_monitor/log/easy_monitor_logger'
+
 module EasyMonitor
   class Engine < ::Rails::Engine
     isolate_namespace EasyMonitor
 
+    DEFAULT_SIDEKIQ_PROCESS_NUMBERS = 1.freeze
+    DEFAULT_SIDEKIQ_JOB_THRESHOLD = 50.freeze
+    DEFAULT_REDIS_URL = '127.0.0.1'.freeze
+    DEFAULT_REDIS_PORT = 6379.freeze
+    DEFAULT_MAX_QUEUE_NUMBER = 250.freeze
+    DEFAULT_MAX_LATENCY = 600.freeze
+    DEFAULT_LOG_PATH = STDOUT
+
     class << self
       mattr_accessor :redis_url
       mattr_accessor :redis_port
+      mattr_accessor :user_class
+      mattr_accessor :sidekiq_process_numbers
+      mattr_accessor :sidekiq_job_threshold
+      mattr_accessor :use_sidekiq
+      mattr_accessor :max_latency
+      mattr_accessor :max_queue_number
+      mattr_accessor :log_path
+
+      self.redis_url = DEFAULT_REDIS_URL
+      self.redis_port = DEFAULT_REDIS_PORT
+      self.sidekiq_process_numbers = DEFAULT_SIDEKIQ_PROCESS_NUMBERS
+      self.sidekiq_job_threshold = DEFAULT_SIDEKIQ_JOB_THRESHOLD
+      self.use_sidekiq = false
+      self.max_latency = DEFAULT_MAX_LATENCY
+      self.max_queue_number = DEFAULT_MAX_QUEUE_NUMBER
+      self.log_path = DEFAULT_LOG_PATH
     end
 
-    def self.setup(&block)
+    def self.setup
       yield self
+    end
+
+    def logger
+      EasyMonitor::Log::EasyMonitorLogger.new(
+        EasyMonitor::Engine.log_path
+      )
     end
 
     config.generators do |g|
