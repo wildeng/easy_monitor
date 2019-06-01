@@ -14,12 +14,12 @@ module EasyMonitor
     def redis_alive
       head :no_content if connect_to_redis
     rescue Redis::CannotConnectError
-      logger.error(
+      EasyMonitor::Engine.logger.error(
         "Redis server at #{EasyMonitor::Engine.redis_url} is not responding"
       )
       head :request_timeout
     rescue StandardError => e
-      logger.error(
+      EasyMonitor::Engine.logger.error(
         "An error occurred #{EasyMonitor::Engine.redis_url} #{e.message}"
       )
       head :request_timeout
@@ -28,13 +28,13 @@ module EasyMonitor
     def sidekiq_alive
       head :no_content if connect_to_sidekiq
     rescue EasyMonitor::Util::Errors::HighLatencyError
-      logger.error( 'Sidekiq is experiencing a high latency')
+      EasyMonitor::Engine.logger.error( 'Sidekiq is experiencing a high latency')
       head :request_timeout
     rescue EasyMonitor::Util::Errors::HighQueueNumberError
-      logger.error( 'Too many jobs enqueued in Sidekiq' )
+      EasyMonitor::Engine.logger.error( 'Too many jobs enqueued in Sidekiq' )
       head :request_timeout
     rescue StandardError => e
-      logger.error('Sidekiq is not responding or not set')
+      EasyMonitor::Engine.logger.error('Sidekiq is not responding or not set')
       head :request_timeout
     end
 

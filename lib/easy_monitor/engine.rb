@@ -37,10 +37,12 @@ module EasyMonitor
       yield self
     end
 
-    config.logger = EasyMonitor::Log::EasyMonitorLogger.new(
-      EasyMonitor::Engine.log_path
-    )
-    
+    def logger
+      EasyMonitor::Log::EasyMonitorLogger.new(
+        EasyMonitor::Engine.log_path
+      )
+    end
+
     config.generators do |g|
       g.test_framework :rspec
       g.fixture_replacement :factory_bot # newly added code

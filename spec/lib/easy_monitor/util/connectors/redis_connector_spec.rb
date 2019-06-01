@@ -40,6 +40,14 @@ module EasyMonitor
                 EasyMonitor::Engine.redis_port
               )
             end
+
+            it 'returns the ping result' do
+              redis = MockRedis.new
+              allow(
+                EasyMonitor::Util::Connectors::RedisConnector
+              ).to receive(:instance).and_return(redis)
+              expect(described_class.instance.ping).to eq('PONG')
+            end
           end
         end
       end

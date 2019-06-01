@@ -14,6 +14,16 @@ module EasyMonitor
     context 'when checking a Redis server' do
       describe 'GET redis_alive' do
         it 'respond with request_timeout when not working' do
+          redis = MockRedis.new
+          allow(redis).to receive(:ping).and_raise(Redis::CannotConnectError)
+          allow(
+            EasyMonitor::Util::Connectors::RedisConnector
+          ).to receive(:instance).and_return(redis)
+          get :redis_alive
+          expect(response.code).to eq('408')
+        end
+
+        it 'respond with request_timeout when catching an error' do
           allow(
             EasyMonitor::Util::Connectors::RedisConnector
           ).to receive(:instance).and_return(nil)
