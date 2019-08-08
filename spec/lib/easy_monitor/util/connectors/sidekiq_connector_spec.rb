@@ -4,31 +4,30 @@ module EasyMonitor
   module Util
     module Connectors
       RSpec.describe SidekiqConnector do
-
-        def use_sidekiq(use=false)
+        def use_sidekiq(use = false)
           EasyMonitor::Engine.setup do |config|
             config.use_sidekiq = use
           end
         end
 
-        def high_latency(high=false)
+        def high_latency(high = false)
           allow_any_instance_of(described_class).to receive(
             :high_latency?
           ).and_return(high)
         end
 
-        def high_queue_number(high=false)
+        def high_queue_number(high = false)
           allow_any_instance_of(described_class).to receive(
             :high_queue_number?
           ).and_return(high)
         end
 
-        def processing(high=false)
+        def processing(high = false)
           allow_any_instance_of(described_class).to receive(
             :processing?
           ).and_return(high)
         end
-          
+
         context 'when initialising' do
           describe 'creating instances' do
             it 'returns only one instance' do
@@ -73,9 +72,9 @@ module EasyMonitor
             it 'returns false if the enqueued jobs are a few' do
               expect(described_class.instance.high_queue_number?).to eq(false)
             end
-          end 
+          end
         end
-        
+
         context 'when there are problems' do
           before do
             use_sidekiq(true)
