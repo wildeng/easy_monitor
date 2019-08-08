@@ -43,7 +43,6 @@ module EasyMonitor
     end
 
     context 'when checking Sidekiq' do
-
       let(:alive) do
         allow_any_instance_of(
           EasyMonitor::Util::Connectors::SidekiqConnector
