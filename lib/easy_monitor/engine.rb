@@ -22,6 +22,8 @@ module EasyMonitor
       mattr_accessor :max_latency
       mattr_accessor :max_queue_number
       mattr_accessor :log_path
+      mattr_accessor :use_totp
+      mattr_accessor :totp_secret
 
       self.redis_url = DEFAULT_REDIS_URL
       self.redis_port = DEFAULT_REDIS_PORT
@@ -31,6 +33,8 @@ module EasyMonitor
       self.max_latency = DEFAULT_MAX_LATENCY
       self.max_queue_number = DEFAULT_MAX_QUEUE_NUMBER
       self.log_path = DEFAULT_LOG_PATH
+      self.use_totp = false
+      self.totp_secret = nil
     end
 
     def self.setup

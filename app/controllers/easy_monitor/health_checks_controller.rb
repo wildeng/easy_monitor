@@ -1,11 +1,13 @@
 require_dependency 'easy_monitor/application_controller'
 require 'redis'
+require 'rotp'
+
 #:nodoc
 module EasyMonitor
   class HealthChecksController < ApplicationController
     protect_from_forgery
 
-    before_action :basic_authentication
+    before_action :check_totp_code, if: :totp_required?
 
     def alive
       head :no_content
@@ -40,17 +42,22 @@ module EasyMonitor
 
     private
 
-    def basic_authentication
-      # TODO: need to implement a clever way of using app authentication
-      true
-    end
-
     def connect_to_redis
       EasyMonitor.redis_ping
     end
 
     def connect_to_sidekiq
       EasyMonitor.sidekiq_alive?
+    end
+
+    def check_totp_code
+      head :unauthorized unless params[:totp_code]
+      totp = ROTP::TOTP.new(EasyMonitor::Engine.totp_secret)
+      head :unauthorized unless totp.verify(params[:totp_code])
+    end
+
+    def totp_required?
+      EasyMonitor::Engine.use_totp
     end
   end
 end

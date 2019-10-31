@@ -1,5 +1,6 @@
 require 'rails_helper'
 require 'mock_redis'
+require 'rotp'
 
 module EasyMonitor
   RSpec.describe HealthChecksController, type: :controller do
@@ -38,6 +39,30 @@ module EasyMonitor
           ).to receive(:instance).and_return(redis)
           get :redis_alive
           expect(response.code).to eq('204')
+        end
+      end
+      context 'when checking Redis with totp auth' do
+        describe 'GET redis_alive' do
+
+          before(:all) do
+            EasyMonitor::Engine.use_totp = true
+            EasyMonitor::Engine.totp_secret = 'WVE5ICKVODGWLZZN2WTKBQ2TGG5SUMDC'
+          end
+
+          after(:all) do
+            EasyMonitor::Engine.use_totp = false
+          end
+
+          it 'responds with 204 when hit' do
+            redis = MockRedis.new
+            allow(
+              EasyMonitor::Util::Connectors::RedisConnector
+            ).to receive(:instance).and_return(redis)
+            totp_code = ROTP::TOTP.new(EasyMonitor::Engine.totp_secret).now
+            params = { totp_code: totp_code }
+            get :redis_alive, params: params
+            expect(response.code).to eq('204')
+          end
         end
       end
     end
