@@ -7,7 +7,7 @@ module EasyMonitor
         context 'when using memcached' do
           describe '#memcached_alive?' do
             let(:memcached_conn) { described_class.new(Rails.cache) }
-            
+
             it 'returns true if running' do
               allow(Rails.cache).to receive(:write).and_return(true)
               allow(Rails.cache).to receive(:read).with('ping').and_return('pong')
@@ -30,5 +30,3 @@ module EasyMonitor
     end
   end
 end
- 
-   
