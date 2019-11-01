@@ -6,6 +6,7 @@ RSpec.describe EasyMonitor do
     before do
       EasyMonitor::Engine.setup do |config|
         config.use_sidekiq = false
+        config.use_totp = false
       end
     end
     describe '#configure' do
@@ -21,6 +22,10 @@ RSpec.describe EasyMonitor do
       it 'does not use sidekiq by default' do
         expect(EasyMonitor::Engine.use_sidekiq).to eq(false)
       end
+
+      it 'does not use totp by default' do
+        expect(EasyMonitor::Engine.use_totp).to eq(false)
+      end
     end
   end
 
@@ -32,6 +37,8 @@ RSpec.describe EasyMonitor do
           config.redis_port = 8080
           config.user_class = 'User'
           config.use_sidekiq = true
+          config.use_totp = true
+          config.totp_secret = 'base32secret3232'
         end
       end
       it 'responds with redis config' do
@@ -45,6 +52,14 @@ RSpec.describe EasyMonitor do
 
       it 'responds with use_sidekiq true' do
         expect(EasyMonitor::Engine.use_sidekiq).to eq(true)
+      end
+
+      it 'responds with use_totp true' do
+        expect(EasyMonitor::Engine.use_totp).to eq(true)
+      end
+
+      it 'responds with secret' do
+        expect(EasyMonitor::Engine.totp_secret).to eq('base32secret3232')
       end
     end
   end

@@ -1,5 +1,6 @@
 require 'rails_helper'
 require 'mock_redis'
+require 'rotp'
 
 module EasyMonitor
   RSpec.describe HealthChecksController, type: :controller do
@@ -8,37 +9,6 @@ module EasyMonitor
       it 'responds with 204 when hit' do
         get :alive
         expect(response.code).to eq('204')
-      end
-    end
-
-    context 'when checking a Redis server' do
-      describe 'GET redis_alive' do
-        it 'respond with request_timeout when not working' do
-          redis = MockRedis.new
-          allow(redis).to receive(:ping).and_raise(Redis::CannotConnectError)
-          allow(
-            EasyMonitor::Util::Connectors::RedisConnector
-          ).to receive(:instance).and_return(redis)
-          get :redis_alive
-          expect(response.code).to eq('408')
-        end
-
-        it 'respond with request_timeout when catching an error' do
-          allow(
-            EasyMonitor::Util::Connectors::RedisConnector
-          ).to receive(:instance).and_return(nil)
-          get :redis_alive
-          expect(response.code).to eq('408')
-        end
-
-        it 'responds with 204 when hit' do
-          redis = MockRedis.new
-          allow(
-            EasyMonitor::Util::Connectors::RedisConnector
-          ).to receive(:instance).and_return(redis)
-          get :redis_alive
-          expect(response.code).to eq('204')
-        end
       end
     end
 
