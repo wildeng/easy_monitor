@@ -63,10 +63,43 @@ module EasyMonitor
             get :redis_alive, params: params
             expect(response.code).to eq('204')
           end
+
+          it 'responds with unauthorized when hit without params' do
+            redis = MockRedis.new
+            allow(
+              EasyMonitor::Util::Connectors::RedisConnector
+            ).to receive(:instance).and_return(redis)
+            totp_code = ROTP::TOTP.new(EasyMonitor::Engine.totp_secret).now
+            get :redis_alive
+            expect(response.code).to eq('401')
+          end
         end
       end
     end
 
+    context 'when checking memcached' do
+      def memcached_alive(value)
+        allow_any_instance_of(
+          EasyMonitor::Util::Connectors::MemcachedConnector
+        ).to receive(:memcached_alive?).and_return(value)
+      end
+
+      describe 'GET memcached alive' do
+        it 'responds with 501 when not used' do
+          get :memcached_alive
+          expect(EasyMonitor::Engine.use_memcached).to eq(false)
+          expect(response.code).to eq('501')
+        end
+
+        it 'responds with 503 when not working' do
+          EasyMonitor::Engine.use_memcached = true
+          memcached_alive(false)
+          get :memcached_alive
+          expect(response.code).to eq('503')
+        end
+      end
+    end
+ 
     context 'when checking Sidekiq' do
       let(:alive) do
         allow_any_instance_of(
