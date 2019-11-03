@@ -1,12 +1,9 @@
 $LOAD_PATH.push File.expand_path('lib', __dir__)
 
-# Maintain your gem's version:
-require 'easy_monitor/version'
-
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |spec|
   spec.name        = 'easy_monitor'
-  spec.version     = EasyMonitor::VERSION
+  spec.version     = '1.0'
   spec.authors     = ['wildeng']
   spec.email       = ['alain.mauri@gmail.com']
   spec.homepage    = 'https://wildengineer.ilcavolfiore.it'
