@@ -45,6 +45,10 @@ mount EasyMonitor::Engine => '/easy_monitor'
 ```
 This will mount the engine routes and you will be able to check the health status of your application.
 
+## Docker version for development
+
+TODO
+
 ## Contributing
 If you want to contribute to the project clone the repository, work on it and open a PR for your changes.
 
