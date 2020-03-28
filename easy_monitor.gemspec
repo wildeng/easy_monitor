@@ -1,12 +1,9 @@
 $LOAD_PATH.push File.expand_path('lib', __dir__)
 
-# Maintain your gem's version:
-require 'easy_monitor/version'
-
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |spec|
   spec.name        = 'easy_monitor'
-  spec.version     = EasyMonitor::VERSION
+  spec.version     = '1.0'
   spec.authors     = ['wildeng']
   spec.email       = ['alain.mauri@gmail.com']
   spec.homepage    = 'https://wildengineer.ilcavolfiore.it'
@@ -27,13 +24,14 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'rails', '~> 5.2.3'
   spec.add_dependency 'redis'
+  spec.add_dependency 'rotp'
   spec.add_dependency 'sidekiq'
 
   spec.add_development_dependency 'factory_bot_rails'
   spec.add_development_dependency 'mock_redis'
+  spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'pry-rails'
   spec.add_development_dependency 'rspec-rails'
-  spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-performance'
   spec.add_development_dependency 'simplecov'

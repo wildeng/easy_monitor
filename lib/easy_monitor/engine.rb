@@ -4,12 +4,12 @@ module EasyMonitor
   class Engine < ::Rails::Engine
     isolate_namespace EasyMonitor
 
-    DEFAULT_SIDEKIQ_PROCESS_NUMBERS = 1.freeze
-    DEFAULT_SIDEKIQ_JOB_THRESHOLD = 50.freeze
+    DEFAULT_SIDEKIQ_PROCESS_NUMBERS = 1
+    DEFAULT_SIDEKIQ_JOB_THRESHOLD = 50
     DEFAULT_REDIS_URL = '127.0.0.1'.freeze
-    DEFAULT_REDIS_PORT = 6379.freeze
-    DEFAULT_MAX_QUEUE_NUMBER = 250.freeze
-    DEFAULT_MAX_LATENCY = 600.freeze
+    DEFAULT_REDIS_PORT = 6379
+    DEFAULT_MAX_QUEUE_NUMBER = 250
+    DEFAULT_MAX_LATENCY = 600
     DEFAULT_LOG_PATH = STDOUT
 
     class << self
@@ -22,6 +22,10 @@ module EasyMonitor
       mattr_accessor :max_latency
       mattr_accessor :max_queue_number
       mattr_accessor :log_path
+      mattr_accessor :use_totp
+      mattr_accessor :totp_secret
+      mattr_accessor :use_memcached
+      mattr_accessor :cache
 
       self.redis_url = DEFAULT_REDIS_URL
       self.redis_port = DEFAULT_REDIS_PORT
@@ -31,6 +35,10 @@ module EasyMonitor
       self.max_latency = DEFAULT_MAX_LATENCY
       self.max_queue_number = DEFAULT_MAX_QUEUE_NUMBER
       self.log_path = DEFAULT_LOG_PATH
+      self.use_memcached = false
+      self.cache = nil
+      self.use_totp = false
+      self.totp_secret = nil
     end
 
     def self.setup
