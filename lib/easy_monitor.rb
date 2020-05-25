@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'easy_monitor/engine'
 
 module EasyMonitor

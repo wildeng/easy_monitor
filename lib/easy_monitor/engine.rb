@@ -1,12 +1,17 @@
+# frozen_string_literal: true
+
 require 'easy_monitor/log/easy_monitor_logger'
+require 'easy_monitor/middleware'
 
 module EasyMonitor
   class Engine < ::Rails::Engine
+    config.app_middleware.use EasyMonitor::Middleware
+
     isolate_namespace EasyMonitor
 
     DEFAULT_SIDEKIQ_PROCESS_NUMBERS = 1
     DEFAULT_SIDEKIQ_JOB_THRESHOLD = 50
-    DEFAULT_REDIS_URL = '127.0.0.1'.freeze
+    DEFAULT_REDIS_URL = '127.0.0.1'
     DEFAULT_REDIS_PORT = 6379
     DEFAULT_MAX_QUEUE_NUMBER = 250
     DEFAULT_MAX_LATENCY = 600

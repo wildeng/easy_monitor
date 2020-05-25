@@ -2,9 +2,11 @@ FROM ruby:2.5.3
 
 ARG uid
 ARG gid
+ENV UID=${uid}
+ENV GID=${gid}
 
 #Add a user for development
-RUN adduser -l -g $gid -u $uid emonitor --home /home/emonitor --shell /bin/bash --disabled-password -gecos ""
+RUN adduser -m -l -g $GID -u $UID emonitor --shell /bin/bash --disabled-password -gecos ""
 
 ADD Gemfile /var/www/
 ADD Gemfile.lock /var/www/

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # class that does some checks on Sidekiq
 # and returns a boolean value to check its availability
 #:nodoc: all
@@ -40,7 +42,7 @@ module EasyMonitor
         end
 
         def processing?
-          stats.processes_size > 0
+          stats.processes_size.positive?
         end
       end
     end

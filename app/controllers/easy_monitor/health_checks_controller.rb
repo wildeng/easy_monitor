@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_dependency 'easy_monitor/application_controller'
 
 #:nodoc
