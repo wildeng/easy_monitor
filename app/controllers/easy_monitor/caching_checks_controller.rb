@@ -38,8 +38,10 @@ module EasyMonitor
     end
 
     def memcached_alive?
-      raise EasyMonitor::Util::Errors::MemcachedNotUsed unless EasyMonitor::Engine.use_memcached
-      raise EasyMonitor::Util::Errors::MemcachedNotWorking unless EasyMonitor::Engine.cache
+      raise EasyMonitor::Util::Errors::MemcachedNotUsed
+        unless EasyMonitor::Engine.use_memcached
+      raise EasyMonitor::Util::Errors::MemcachedNotWorking
+        unless EasyMonitor::Engine.cache
 
       EasyMonitor::Util::Connectors::MemcachedConnector.new(
         EasyMonitor::Engine.cache
