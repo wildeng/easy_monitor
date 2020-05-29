@@ -43,12 +43,7 @@ module EasyMonitor
       LOG
     end
 
-    def error_object(err)
-      {
-        timestamp: Time.now,
-        error: err
-      }
-    end
+    private
 
     def request_object(request, start, delta)
       {
@@ -66,6 +61,13 @@ module EasyMonitor
       r = Rack::Response.new(body, status, headers)
       r.inspect
       # TODO: take some interesting parts out of this
+    end
+
+    def exception_object(exception)
+      {
+        timestamp: Time.now,
+        exception: exception
+      }
     end
   end
 end
