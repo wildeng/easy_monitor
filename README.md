@@ -45,6 +45,30 @@ mount EasyMonitor::Engine => '/easy_monitor'
 ```
 This will mount the engine routes and you will be able to check the health status of your application.
 
+## InfluxDb
+
+TODO
+
+There's a WIP part using influxdb-rails gem.
+I'm using it with a local docker container for InfluxDb:
+
+```bash
+docker pull influxdb
+docker run --name <your_name> -p 8086:8086 influxdb
+```
+
+this will generate a container called <your_name> which can be used together with easy_monitor.
+Remember that unless you don't mount a volume, the container data is not persistent and
+whenever you delete the container, the data goes with it!
+
+You can, however use a different way such as self hosting, aws etc.
+There's a WIP rake task that will create an influxdb called easy_monitor and you can pass your
+own host and port. It defaults to localhost and 8086:
+
+```bash
+bundle exec rake app:easy_monitor:easydb 
+```
+
 ## Docker version for development
 
 TODO

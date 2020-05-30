@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'redis'
   spec.add_dependency 'rotp'
   spec.add_dependency 'sidekiq'
-  spec.add_dependency 'influxdb-rails'
+  spec.add_dependency 'influxdb'
 
   spec.add_development_dependency 'factory_bot_rails'
   spec.add_development_dependency 'mock_redis'

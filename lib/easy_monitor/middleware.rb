@@ -12,12 +12,20 @@ module EasyMonitor
 
     def call(env)
       request = Rack::Request.new(env)
-      request_started = Time.now
+      request_started = time_millis
       status, headers, body = @app.call(env)
       # TODO: need to check the response
       # response = Rack::Response.new(body, status, headers)
-      request_ended = Time.now
-      delta = request_started - request_ended
+      delta = time_millis - request_started
+
+      # TODO: refactor this part moving the code in its own class
+      data = data(
+        {'type': 'process_actions'},
+        request_object(request, request_started, delta)
+      )
+      client.write_point('easy_monitor_middleware',data)
+
+      # TODO: this needs to be put in its class
       Rails.logger.debug " This is my exception: #{env['action_dispatch.exception']}"
       #Rails.logger.debug response_object(body, status, headers)
       #Rails.logger.debug debug_string(request, request_started, delta, status)
@@ -45,15 +53,19 @@ module EasyMonitor
 
     private
 
+    def time_millis
+      (Time.now.to_r * 1000).to_i
+    end
+
     def request_object(request, start, delta)
       {
-        timestamp: Time.now,
-        req_method: request.method,
+        value: time_millis,
+        req_method: request.request_method,
         req_path: request.path_info,
-        req_server: request.server,
-        req_port: request.server_porth,
+        req_server: request.server_name,
+        req_port: request.server_port,
         req_start: start,
-        req_delta: delta
+        req_duration: delta
       }
     end
 
@@ -65,9 +77,23 @@ module EasyMonitor
 
     def exception_object(exception)
       {
-        timestamp: Time.now,
+        value: time_millis,
+        hook: 'runtime_exceptions',
         exception: exception
       }
+    end
+
+    def data(tags, payload)
+      {
+        values: payload,
+        tags: tags
+      }
+    end
+
+    # TODO: move the client in it's own library and use username and password
+    def client
+      database = 'easy_monitor'
+      InfluxDB::Client.new database, time_precision: 'ms' # defaults to localhost:8086
     end
   end
 end

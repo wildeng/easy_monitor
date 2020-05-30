@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'easy_monitor/engine'
+require 'influxdb'
 
 module EasyMonitor
   class << self

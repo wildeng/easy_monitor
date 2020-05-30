@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     easy_monitor (1.0)
-      influxdb-rails
+      influxdb
       rails (~> 5.2.3)
       redis
       rotp
@@ -75,9 +75,6 @@ GEM
     i18n (1.8.2)
       concurrent-ruby (~> 1.0)
     influxdb (0.8.0)
-    influxdb-rails (1.0.0)
-      influxdb (~> 0.6, >= 0.6.4)
-      railties (>= 4.2)
     jaro_winkler (1.5.4)
     loofah (2.4.0)
       crass (~> 1.0.2)
