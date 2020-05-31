@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'easy_monitor/influxdb/client'
+
 module EasyMonitor
   class Middleware
     def initialize(app)
@@ -19,12 +21,7 @@ module EasyMonitor
       delta = time_millis - request_started
 
       # TODO: refactor this part moving the code in its own class
-      data = data(
-        {'type': 'process_actions'},
-        request_object(request, request_started, delta)
-      )
-      client.write_point('easy_monitor_middleware',data)
-
+      influxdb_write_actions(request, request_started, delta)
       # TODO: this needs to be put in its class
       Rails.logger.debug " This is my exception: #{env['action_dispatch.exception']}"
       #Rails.logger.debug response_object(body, status, headers)
@@ -53,8 +50,18 @@ module EasyMonitor
 
     private
 
+    def influxdb_write_actions(request, start, delta)
+      EasyMonitor::Influxdb::Client.new(
+        time_precision: "ms"
+      ).write(
+        'easy_monitor_middleware',
+        request_object(request, start, delta),
+        {'type': 'process_actions'}
+      )
+    end
+
     def time_millis
-      (Time.now.to_r * 1000).to_i
+      Time.now.to_i * 1000
     end
 
     def request_object(request, start, delta)
@@ -81,19 +88,6 @@ module EasyMonitor
         hook: 'runtime_exceptions',
         exception: exception
       }
-    end
-
-    def data(tags, payload)
-      {
-        values: payload,
-        tags: tags
-      }
-    end
-
-    # TODO: move the client in it's own library and use username and password
-    def client
-      database = 'easy_monitor'
-      InfluxDB::Client.new database, time_precision: 'ms' # defaults to localhost:8086
     end
   end
 end
