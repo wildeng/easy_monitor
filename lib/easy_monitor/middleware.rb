@@ -15,17 +15,15 @@ module EasyMonitor
     def call(env)
       request = Rack::Request.new(env)
       request_started = time_millis
-      status, headers, body = @app.call(env)
-      # TODO: need to check the response
-      # response = Rack::Response.new(body, status, headers)
+      begin
+        status, headers, body = @app.call(env)
+      rescue Exception => ex
+        Rails.logger.error "This is my exception: #{env['action_dispatch.exception']}"
+        influxdb_write_exceptions(env['action_dispatch.exception'])
+        raise ex
+      end
       delta = time_millis - request_started
-
-      # TODO: refactor this part moving the code in its own class
       influxdb_write_actions(request, request_started, delta)
-      # TODO: this needs to be put in its class
-      Rails.logger.debug " This is my exception: #{env['action_dispatch.exception']}"
-      #Rails.logger.debug response_object(body, status, headers)
-      #Rails.logger.debug debug_string(request, request_started, delta, status)
       [status, headers, body]
     end
 
@@ -51,12 +49,24 @@ module EasyMonitor
     private
 
     def influxdb_write_actions(request, start, delta)
-      EasyMonitor::Influxdb::Client.new(
-        time_precision: "ms"
-      ).write(
+      client.write(
         'easy_monitor_middleware',
         request_object(request, start, delta),
-        {'type': 'process_actions'}
+        { type: 'process_actions'}
+      )
+    end
+
+    def influxdb_write_exceptions(exception)
+      client.write(
+        'easy_monitor_middleware',
+        exception_object(exception),
+        { type: 'app_exceptions'}
+      )
+    end
+
+    def client
+      EasyMonitor::Influxdb::Client.new(
+        time_precision: "ms"
       )
     end
 
@@ -85,7 +95,6 @@ module EasyMonitor
     def exception_object(exception)
       {
         value: time_millis,
-        hook: 'runtime_exceptions',
         exception: exception
       }
     end

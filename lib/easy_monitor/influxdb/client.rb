@@ -13,6 +13,7 @@ module EasyMonitor
       end
 
       def write(name, payload, tags = {})
+        Rails.logger.info "tags: #{tags.inspect}"
         data = {
           tags: tags,
           values: payload

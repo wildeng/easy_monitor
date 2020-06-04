@@ -5,7 +5,7 @@ require 'easy_monitor/middleware'
 
 module EasyMonitor
   class Engine < ::Rails::Engine
-    config.app_middleware.use EasyMonitor::Middleware
+    config.app_middleware.insert_after ActionDispatch::DebugExceptions, EasyMonitor::Middleware
 
     isolate_namespace EasyMonitor
 
