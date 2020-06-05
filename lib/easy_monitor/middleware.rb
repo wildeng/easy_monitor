@@ -16,15 +16,17 @@ module EasyMonitor
       request = Rack::Request.new(env)
       request_started = time_millis
       begin
-        status, headers, body = @app.call(env)
+        response = @app.call(env)
       rescue Exception => ex
-        Rails.logger.error "This is my exception: #{env['action_dispatch.exception']}"
-        influxdb_write_exceptions(env['action_dispatch.exception'])
+        influxdb_write_exceptions(env, ex)
         raise ex
       end
+      Rails.logger.debug "#{env.inspect}"
+      exception = env['action_dispatch.exception']
+      influxdb_write_exceptions(env) if exception
       delta = time_millis - request_started
       influxdb_write_actions(request, request_started, delta)
-      [status, headers, body]
+      response
     end
 
     private
@@ -56,10 +58,13 @@ module EasyMonitor
       )
     end
 
-    def influxdb_write_exceptions(exception)
+    def influxdb_write_exceptions(env, ex)
+      exp = env['action_dispatch.exception'] unless ex
+      exp = "#{ex.message} #{ex.backtrace.join('\n')}" if ex
+      Rails.logger.debug "#{timestamp} Logging the error"
       client.write(
         'easy_monitor_middleware',
-        exception_object(exception),
+        exception_object(ex),
         { type: 'app_exceptions'}
       )
     end
