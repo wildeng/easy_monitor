@@ -21,9 +21,6 @@ module EasyMonitor
         influxdb_write_exceptions(env, ex)
         raise ex
       end
-      Rails.logger.debug "#{env.inspect}"
-      exception = env['action_dispatch.exception']
-      influxdb_write_exceptions(env) if exception
       delta = time_millis - request_started
       influxdb_write_actions(request, request_started, delta)
       response
@@ -61,10 +58,9 @@ module EasyMonitor
     def influxdb_write_exceptions(env, ex)
       exp = env['action_dispatch.exception'] unless ex
       exp = "#{ex.message} #{ex.backtrace.join('\n')}" if ex
-      Rails.logger.debug "#{timestamp} Logging the error"
       client.write(
         'easy_monitor_middleware',
-        exception_object(ex),
+        exception_object(exp),
         { type: 'app_exceptions'}
       )
     end
