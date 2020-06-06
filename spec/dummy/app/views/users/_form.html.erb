@@ -1,0 +1,9 @@
+<h2>User</h2>
+<%= form_for(@user) do |f| %>
+  <p>
+    <b>Name:</b><br>
+    <%=f.text_field :name %><br>
+    <b>Email:</b> <br>
+    <%=f.text_field :email %><br>
+    <%=f.submit "Save" %>
+<% end %>

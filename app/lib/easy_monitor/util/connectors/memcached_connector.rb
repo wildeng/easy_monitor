@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # class that checks if memcache is working
 module EasyMonitor
   module Util

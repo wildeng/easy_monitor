@@ -1,16 +1,23 @@
+# frozen_string_literal: true
+
 require 'easy_monitor/log/easy_monitor_logger'
+require 'easy_monitor/middleware'
 
 module EasyMonitor
   class Engine < ::Rails::Engine
+    config.app_middleware.use EasyMonitor::Middleware
+
     isolate_namespace EasyMonitor
 
     DEFAULT_SIDEKIQ_PROCESS_NUMBERS = 1
     DEFAULT_SIDEKIQ_JOB_THRESHOLD = 50
-    DEFAULT_REDIS_URL = '127.0.0.1'.freeze
+    DEFAULT_REDIS_URL = '127.0.0.1'
     DEFAULT_REDIS_PORT = 6379
     DEFAULT_MAX_QUEUE_NUMBER = 250
     DEFAULT_MAX_LATENCY = 600
     DEFAULT_LOG_PATH = STDOUT
+    DEFAULT_INFLUXDB_HOST = 'localhost'
+    DEFAULT_INFLUXDB_PORT = '8086'
 
     class << self
       mattr_accessor :redis_url
@@ -26,6 +33,8 @@ module EasyMonitor
       mattr_accessor :totp_secret
       mattr_accessor :use_memcached
       mattr_accessor :cache
+      mattr_accessor :influxdb_host
+      mattr_accessor :influxdb_port
 
       self.redis_url = DEFAULT_REDIS_URL
       self.redis_port = DEFAULT_REDIS_PORT
@@ -39,6 +48,8 @@ module EasyMonitor
       self.cache = nil
       self.use_totp = false
       self.totp_secret = nil
+      self.influxdb_host = DEFAULT_INFLUXDB_HOST
+      self.influxdb_port = DEFAULT_INFLUXDB_PORT
     end
 
     def self.setup

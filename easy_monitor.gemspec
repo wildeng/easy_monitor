@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 $LOAD_PATH.push File.expand_path('lib', __dir__)
 
 # Describe your gem and declare its dependencies:
@@ -26,6 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'redis'
   spec.add_dependency 'rotp'
   spec.add_dependency 'sidekiq'
+  spec.add_dependency 'influxdb'
 
   spec.add_development_dependency 'factory_bot_rails'
   spec.add_development_dependency 'mock_redis'

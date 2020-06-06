@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Singleton class that checks if
 # a Redis instance is alive
 #:nodoc: all

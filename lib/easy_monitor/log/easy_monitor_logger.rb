@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'easy_monitor/log/log_formatter'
 
 module EasyMonitor
