@@ -15,24 +15,25 @@ module EasyMonitor
     def call(env)
       request = Rack::Request.new(env)
       request_started = time_millis
-      begin
-        response = @app.call(env)
-      rescue Exception => ex
-        influxdb_write_exceptions(env, ex)
-        raise ex
-      end
-      delta = time_millis - request_started
-      influxdb_write_actions(request, request_started, delta)
+      response = call_app(env)
+      influxdb_write_actions(request, request_started)
       response
     end
 
     private
 
-    def timestamp
-      Time.now.strftime("%Y-%M-%d %H:%m:%S")
+    def call_app(env)
+      @app.call(env)
+    rescue Exception => e
+      influxdb_write_exceptions(env, e)
+      raise e
     end
 
-    def debug_string(request, start, delta, status)
+    def timestamp
+      Time.now.strftime('%Y-%M-%d %H:%m:%S')
+    end
+
+    def debug_string(request, _start, delta, status)
       debug_string = <<-LOG
         #{timestamp}
         Request PATH: #{request.path_info},
@@ -45,29 +46,28 @@ module EasyMonitor
       LOG
     end
 
-    private
-
-    def influxdb_write_actions(request, start, delta)
+    def influxdb_write_actions(request, start)
+      delta = time_millis - start
       client.write(
         'easy_monitor_middleware',
         request_object(request, start, delta),
-        { type: 'process_actions'}
+        { type: 'process_actions' }
       )
     end
 
-    def influxdb_write_exceptions(env, ex)
-      exp = env['action_dispatch.exception'] unless ex
-      exp = "#{ex.message} #{ex.backtrace.join('\n')}" if ex
+    def influxdb_write_exceptions(env, exception)
+      exp = env['action_dispatch.exception'] unless exception
+      exp = "#{exception.message} #{exception.backtrace.join('\n')}" if exception
       client.write(
         'easy_monitor_middleware',
         exception_object(exp),
-        { type: 'app_exceptions'}
+        { type: 'app_exceptions' }
       )
     end
 
     def client
       EasyMonitor::Influxdb::Client.new(
-        time_precision: "ms"
+        time_precision: 'ms'
       )
     end
 
