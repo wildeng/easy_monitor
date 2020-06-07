@@ -24,11 +24,11 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
+  spec.add_dependency 'influxdb'
   spec.add_dependency 'rails', '~> 5.2.3'
   spec.add_dependency 'redis'
   spec.add_dependency 'rotp'
   spec.add_dependency 'sidekiq'
-  spec.add_dependency 'influxdb'
 
   spec.add_development_dependency 'factory_bot_rails'
   spec.add_development_dependency 'mock_redis'
@@ -39,4 +39,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-performance'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'sqlite3'
+  spec.add_development_dependency 'webmock'
 end

@@ -28,6 +28,11 @@ RSpec.describe EasyMonitor do
       it 'does not use totp by default' do
         expect(EasyMonitor::Engine.use_totp).to eq(false)
       end
+
+      it 'responds with default influxdb settings' do
+        expect(EasyMonitor::Engine.influxdb_host).to eq('localhost')
+        expect(EasyMonitor::Engine.influxdb_port).to eq('8086')
+      end
     end
   end
 
@@ -41,8 +46,15 @@ RSpec.describe EasyMonitor do
           config.use_sidekiq = true
           config.use_totp = true
           config.totp_secret = 'base32secret3232'
+          config.influxdb_host = 'http://superhost.com'
+          config.influxdb_port = '8080'
         end
       end
+      it 'responds with influxdb configs' do
+        expect(EasyMonitor::Engine.influxdb_host).to eq('http://superhost.com')
+        expect(EasyMonitor::Engine.influxdb_port).to eq('8080')
+      end
+
       it 'responds with redis config' do
         expect(EasyMonitor::Engine.redis_url).to eq('10.10.2.3')
         expect(EasyMonitor::Engine.redis_port).to eq(8080)
