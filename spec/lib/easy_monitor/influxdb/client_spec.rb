@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 module EasyMonitor
@@ -18,8 +20,8 @@ module EasyMonitor
         end
       end
 
-      context "when writing" do
-        describe "#write" do
+      context 'when writing' do
+        describe '#write' do
           let(:database) { 'easy_monitor' }
           let(:tags) { { type: 'test' } }
           let(:values) { { value: 'my value' } }
@@ -31,23 +33,23 @@ module EasyMonitor
 
           before do
             stub_request(:post, 'http://localhost:8086/write').with(
-              query: { u: 'root', p: 'root', precision: 'ms', db: database},
+              query: { u: 'root', p: 'root', precision: 'ms', db: database },
               headers: {
                 'Accept' => '*/*',
                 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-                'Content-Type' => "application/octet-stream",
+                'Content-Type' => 'application/octet-stream',
                 'User-Agent' => 'Ruby'
               },
               body: body
             ).to_return(status: 204)
           end
 
-          it "returns a 204 after writing" do
+          it 'returns a 204 after writing' do
             expect(influxdb_client.write(
-              'test',
-              values,
-              tags
-            )).to be_a(Net::HTTPSuccess)
+                     'test',
+                     values,
+                     tags
+                   )).to be_a(Net::HTTPSuccess)
           end
         end
       end
