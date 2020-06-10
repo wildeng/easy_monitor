@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MockRackApp
   attr_reader :request_body
 
@@ -10,9 +12,7 @@ class MockRackApp
     handle_request(env['REQUEST_METHOD'], env['PATH_INFO'])
   end
 
-  def env
-    @env
-  end
+  attr_reader :env
 
   def [](key)
     @env[key]
@@ -33,14 +33,12 @@ class MockRackApp
   end
 
   def response(method, path)
-    if path.include?('error')
-      raise StandardError.new("This is an error")
-    else
-      [
-        200,
-        { 'Content-Type' => 'text/plain'},
-        "You requested this method: #{method}"
-      ]
-    end
+    raise StandardError, 'This is an error' if path.include?('error')
+
+    [
+      200,
+      { 'Content-Type' => 'text/plain' },
+      "You requested this method: #{method}"
+    ]
   end
 end
