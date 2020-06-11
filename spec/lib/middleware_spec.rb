@@ -16,8 +16,12 @@ RSpec.describe EasyMonitor::Middleware do
     )
   end
 
-  context 'when called with a GET request' do
+  context 'when influxdb connection is active' do
     before do
+      EasyMonitor::Engine.config do |conf|
+        conf.use_influxdb = true
+      end
+
       allow_any_instance_of(EasyMonitor::Influxdb::Client).to receive(
         :influxdb_write_actions
       ).and_return(true)
@@ -25,49 +29,41 @@ RSpec.describe EasyMonitor::Middleware do
       allow_any_instance_of(EasyMonitor::Influxdb::Client).to receive(
         :influxdb_write_exceptions
       ).and_return(true)
-      request.get('/users/1', 'CONTENT_TYPE' => 'text/plain')
     end
 
-    it 'passes the request through unchanged' do
-      expect(app['CONTENT_TYPE']).to eq('text/plain')
-      expect(client.influxdb_write_actions(request, Time.now)).to eq(true)
+    describe 'called with a GET request' do
+      it 'passes the request through unchanged' do
+        request.get('/users/1', 'CONTENT_TYPE' => 'text/plain')
+        expect(app['CONTENT_TYPE']).to eq('text/plain')
+        expect(client.influxdb_write_actions(request, Time.now)).to eq(true)
+      end
+
+      it 'catches the exceptions and passes it over' do
+        expect do
+          request.get('users/error', 'CONTENT_TYPE' => 'text/plain')
+        end.to raise_error StandardError
+        expect(
+          client.influxdb_write_exceptions(app.env, 'exception')
+        ).to eq(true)
+      end
     end
 
-    it 'catches the exceptions and passes it over' do
-      expect do
-        request.get('users/error', 'CONTENT_TYPE' => 'text/plain')
-      end.to raise_error StandardError
-      expect(
-        client.influxdb_write_exceptions(app.env, 'exception')
-      ).to eq(true)
-    end
-  end
+    describe 'called with a POST request' do
+      it 'passes the request through unchanged' do
+        request.post('/users?name=Foo&surname=Bar', 'CONTENT_TYPE' => 'text/plain')
+        expect(app['CONTENT_TYPE']).to eq('text/plain')
+        expect(app.env['QUERY_STRING']).to eq('name=Foo&surname=Bar')
+        expect(client.influxdb_write_actions(request, Time.now)).to eq(true)
+      end
 
-  context 'when called with a POST request' do
-    before do
-      allow_any_instance_of(EasyMonitor::Influxdb::Client).to receive(
-        :influxdb_write_actions
-      ).and_return(true)
-
-      allow_any_instance_of(EasyMonitor::Influxdb::Client).to receive(
-        :influxdb_write_exceptions
-      ).and_return(true)
-      request.post('/users?name=Foo&surname=Bar', 'CONTENT_TYPE' => 'text/plain')
-    end
-
-    it 'passes the request through unchanged' do
-      expect(app['CONTENT_TYPE']).to eq('text/plain')
-      expect(app.env['QUERY_STRING']).to eq('name=Foo&surname=Bar')
-      expect(client.influxdb_write_actions(request, Time.now)).to eq(true)
-    end
-
-    it 'catches the exceptions and passes it over' do
-      expect do
-        request.post('users/error?user=baz', 'CONTENT_TYPE' => 'text/plain')
-      end.to raise_error StandardError
-      expect(
-        client.influxdb_write_exceptions(app.env, 'exception')
-      ).to eq(true)
+      it 'catches the exceptions and passes it over' do
+        expect do
+          request.post('users/error?user=baz', 'CONTENT_TYPE' => 'text/plain')
+        end.to raise_error StandardError
+        expect(
+          client.influxdb_write_exceptions(app.env, 'exception')
+        ).to eq(true)
+      end
     end
   end
 end

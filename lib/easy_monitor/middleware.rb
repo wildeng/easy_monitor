@@ -16,7 +16,11 @@ module EasyMonitor
       request = Rack::Request.new(env)
       request_started = client.time_millis
       response = call_app(env)
-      client.influxdb_write_actions(request, request_started)
+      if EasyMonitor::Engine.use_influxdb
+        client.influxdb_write_actions(
+          request, request_started
+        )
+      end
       response
     end
 
@@ -25,7 +29,11 @@ module EasyMonitor
     def call_app(env)
       @app.call(env)
     rescue Exception => e
-      client.influxdb_write_exceptions(env, e)
+      if EasyMonitor::Engine.use_influxdb
+        client.influxdb_write_exceptions(
+          env, e
+        )
+      end
       raise e
     end
 
