@@ -9,7 +9,11 @@ module EasyMonitor
 
     # heartbeat of the application
     def alive
-      head :no_content
+      msg = { status: 200, message: 'alive'}
+      respond_to do |format|
+        format.json { render json: msg }
+        format.all { head :no_content }
+      end
     end
 
     def sidekiq_alive

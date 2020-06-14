@@ -12,6 +12,14 @@ module EasyMonitor
         get :alive
         expect(response.code).to eq('204')
       end
+
+      it 'responds with 200 when json' do
+        get :alive, format: 'json'
+        message = JSON.parse(response.body)
+        expect(response.code).to eq('200')
+        expect(message['status']).to eq(200)
+        expect(message['message']).to eq('alive')
+      end
     end
 
     context 'when checking Sidekiq' do
