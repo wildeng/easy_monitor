@@ -10,22 +10,26 @@ module EasyMonitor
 
     context 'when checking a Redis server' do
       describe 'GET redis_alive' do
-        it 'respond with request_timeout when not working' do
+        it 'respond with 200 and a message when not working' do
           redis = MockRedis.new
           allow(redis).to receive(:ping).and_raise(Redis::CannotConnectError)
           allow(
             EasyMonitor::Util::Connectors::RedisConnector
           ).to receive(:instance).and_return(redis)
           get :redis_alive
-          expect(response.code).to eq('408')
+          expect(response.code).to eq('200')
+          body = JSON.parse(response.body)
+          expect(body['message']).to eq('Redis is not responding or not set up')
         end
 
-        it 'respond with request_timeout when catching an error' do
+        it 'respond with 200 and a message when catching an error' do
           allow(
             EasyMonitor::Util::Connectors::RedisConnector
           ).to receive(:instance).and_return(nil)
           get :redis_alive
-          expect(response.code).to eq('408')
+          expect(response.code).to eq('200')
+          body = JSON.parse(response.body)
+          expect(body['message']).to eq('There is something wrong with Redis')
         end
 
         it 'responds with 204 when hit' do
@@ -34,7 +38,9 @@ module EasyMonitor
             EasyMonitor::Util::Connectors::RedisConnector
           ).to receive(:instance).and_return(redis)
           get :redis_alive
-          expect(response.code).to eq('204')
+          expect(response.code).to eq('200')
+          body = JSON.parse(response.body)
+          expect(body['message']).to eq('Redis is alive')
         end
       end
       context 'when checking Redis with totp auth' do
@@ -48,7 +54,7 @@ module EasyMonitor
             EasyMonitor::Engine.use_totp = false
           end
 
-          it 'responds with 204 when hit' do
+          it 'responds with 200 when hit' do
             redis = MockRedis.new
             allow(
               EasyMonitor::Util::Connectors::RedisConnector
@@ -56,7 +62,9 @@ module EasyMonitor
             totp_code = ROTP::TOTP.new(EasyMonitor::Engine.totp_secret).now
             params = { totp_code: totp_code }
             get :redis_alive, params: params
-            expect(response.code).to eq('204')
+            expect(response.code).to eq('200')
+            body = JSON.parse(response.body)
+            expect(body['message']).to eq('Redis is alive')
           end
 
           it 'responds with unauthorized when hit without params' do
@@ -66,6 +74,17 @@ module EasyMonitor
             ).to receive(:instance).and_return(redis)
             get :redis_alive
             expect(response.code).to eq('401')
+          end
+
+          it 'responds with unatuthorized and a message when code is wrong' do
+            redis = MockRedis.new
+            allow(
+              EasyMonitor::Util::Connectors::RedisConnector
+            ).to receive(:instance).and_return(redis)
+            get :redis_alive, params: { totp_code: 'ISAWRONGCODE' }
+            expect(response.code).to eq('401')
+            body = JSON.parse(response.body)
+            expect(body['message']).to eq('unauthorized access')
           end
         end
       end

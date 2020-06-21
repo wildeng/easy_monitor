@@ -32,6 +32,7 @@ RSpec.describe EasyMonitor do
       it 'responds with default influxdb settings' do
         expect(EasyMonitor::Engine.influxdb_host).to eq('localhost')
         expect(EasyMonitor::Engine.influxdb_port).to eq('8086')
+        expect(EasyMonitor::Engine.use_influxdb).to eq(false)
       end
     end
   end
@@ -48,11 +49,13 @@ RSpec.describe EasyMonitor do
           config.totp_secret = 'base32secret3232'
           config.influxdb_host = 'http://superhost.com'
           config.influxdb_port = '8080'
+          config.use_influxdb = true
         end
       end
       it 'responds with influxdb configs' do
         expect(EasyMonitor::Engine.influxdb_host).to eq('http://superhost.com')
         expect(EasyMonitor::Engine.influxdb_port).to eq('8080')
+        expect(EasyMonitor::Engine.use_influxdb).to eq(true)
       end
 
       it 'responds with redis config' do

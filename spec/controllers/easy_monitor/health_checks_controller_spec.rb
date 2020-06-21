@@ -8,9 +8,18 @@ module EasyMonitor
   RSpec.describe HealthChecksController, type: :controller do
     routes { EasyMonitor::Engine.routes }
     describe 'GET alive' do
-      it 'responds with 204 when hit' do
+      it 'responds with 200 and a message when hit' do
         get :alive
-        expect(response.code).to eq('204')
+        expect(response.code).to eq('200')
+        body = JSON.parse(response.body)
+        expect(body['message']).to eq('System is alive')
+      end
+
+      it 'responds with 200 when json' do
+        get :alive, format: 'json'
+        message = JSON.parse(response.body)
+        expect(response.code).to eq('200')
+        expect(message['message']).to eq('System is alive')
       end
     end
 
@@ -38,28 +47,36 @@ module EasyMonitor
       end
 
       describe 'GET Sidekiq alive' do
-        it 'responds with request_timeout when not set or not working' do
+        it 'responds with 200 and a message when not set or not working' do
           get :sidekiq_alive
           expect(EasyMonitor::Engine.use_sidekiq).to eq(false)
-          expect(response.code).to eq('408')
+          body = JSON.parse(response.body)
+          expect(response.code).to eq('200')
+          expect(body['message']).to eq('Sidekiq is not responding or not set')
         end
 
-        it 'responds with request_timeout when high latency' do
+        it 'responds with 200 and a message when high latency' do
           high_latency
           get :sidekiq_alive
-          expect(response.code).to eq('408')
+          body = JSON.parse(response.body)
+          expect(response.code).to eq('200')
+          expect(body['message']).to eq('Sidekiq is experiencing a high latency')
         end
 
-        it 'responds with request_timeout when high queue' do
+        it 'responds with 200 and a message when high queue' do
           high_queue
           get :sidekiq_alive
-          expect(response.code).to eq('408')
+          body = JSON.parse(response.body)
+          expect(response.code).to eq('200')
+          expect(body['message']).to eq('Too many jobs enqueued in Sidekiq')
         end
 
-        it 'responds with 204 when alive' do
+        it 'responds with 200 and a message when alive' do
           alive
           get :sidekiq_alive
-          expect(response.code).to eq('204')
+          body = JSON.parse(response.body)
+          expect(response.code).to eq('200')
+          expect(body['message']).to eq('Sidekiq is alive')
         end
       end
     end
