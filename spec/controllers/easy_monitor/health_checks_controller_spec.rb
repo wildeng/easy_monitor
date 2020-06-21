@@ -8,16 +8,18 @@ module EasyMonitor
   RSpec.describe HealthChecksController, type: :controller do
     routes { EasyMonitor::Engine.routes }
     describe 'GET alive' do
-      it 'responds with 204 when hit' do
+      it 'responds with 200 and a message when hit' do
         get :alive
-        expect(response.code).to eq('204')
+        expect(response.code).to eq('200')
+        body = JSON.parse(response.body)
+        expect(body['message']).to eq('System is alive')
       end
 
       it 'responds with 200 when json' do
         get :alive, format: 'json'
         message = JSON.parse(response.body)
         expect(response.code).to eq('200')
-        expect(message['message']).to eq('alive')
+        expect(message['message']).to eq('System is alive')
       end
     end
 

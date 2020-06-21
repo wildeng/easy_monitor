@@ -18,20 +18,38 @@ module EasyMonitor
     end
 
     def redis_alive
-      head :no_content if connect_to_redis
+      redis_alive_message if connect_to_redis
     rescue Redis::CannotConnectError
       log_message(
         "Redis server at #{EasyMonitor::Engine.redis_url} is not responding"
       )
-      head :request_timeout
+      redis_not_setup_message
     rescue StandardError => e
       log_message(
         "An error occurred #{EasyMonitor::Engine.redis_url} #{e.message}"
       )
-      head :request_timeout
+      redis_error_message
     end
 
     private
+
+    def redis_alive_message
+      render json: {
+        message: 'Redis is alive'
+      }, status: 200
+    end
+
+    def redis_not_setup_message
+      render json: {
+        message: 'Redis is not responding or not set up'
+      }, status: 200
+    end
+
+    def redis_error_message
+      render json: {
+        message: 'There is something wrong with Redis'
+      }, status: 200
+    end
 
     def connect_to_redis
       EasyMonitor.redis_ping

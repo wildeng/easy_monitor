@@ -9,36 +9,48 @@ module EasyMonitor
 
     # heartbeat of the application
     def alive
-      msg = { message: 'alive'}
-      respond_to do |format|
-        format.json { render json: msg, status: 200 }
-        format.all { head :no_content }
-      end
+      render json: { message: 'System is alive' }, status: 200
     end
 
     # TODO: check the openapi specification and take a look if this is compliant
     def sidekiq_alive
-      render json: {
-        message: 'Sidekiq is alive'
-      }, status: 200 if connect_to_sidekiq
+      sidekiq_alive_message if connect_to_sidekiq
     rescue EasyMonitor::Util::Errors::HighLatencyError
       EasyMonitor::Engine.logger.error('Sidekiq is experiencing a high latency')
-      render json: {
-        message: 'Sidekiq is experiencing a high latency'
-      }, status: 200
+      sidekiq_high_latency_message
     rescue EasyMonitor::Util::Errors::HighQueueNumberError
       EasyMonitor::Engine.logger.error('Too many jobs enqueued in Sidekiq')
-      render json: {
-        message: 'Too many jobs enqueued in Sidekiq'
-      }, status: 200
+      sidekiq_high_queue_message
     rescue StandardError
       EasyMonitor::Engine.logger.error('Sidekiq is not responding or not set')
-      render json: {
-        message:'Sidekiq is not responding or not set'
-      }, status: 200
+      sidekiq_error_message
     end
 
     private
+
+    def sidekiq_alive_message
+      render json: {
+        message: 'Sidekiq is alive'
+      }, status: 200
+    end
+
+    def sidekiq_high_latency_message
+      render json: {
+        message: 'Sidekiq is experiencing a high latency'
+      }, status: 200
+    end
+
+    def sidekiq_high_queue_message
+      render json: {
+        message: 'Too many jobs enqueued in Sidekiq'
+      }, status: 200
+    end
+
+    def sidekiq_error_message
+      render json: {
+        message: 'Sidekiq is not responding or not set'
+      }, status: 200
+    end
 
     def connect_to_sidekiq
       EasyMonitor.sidekiq_alive?

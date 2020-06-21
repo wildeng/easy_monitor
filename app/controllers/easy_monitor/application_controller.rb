@@ -18,7 +18,11 @@ module EasyMonitor
       return head :unauthorized unless params[:totp_code]
 
       totp = ROTP::TOTP.new(EasyMonitor::Engine.totp_secret)
-      head :unauthorized unless totp.verify(params[:totp_code])
+      return if totp.verify(params[:totp_code])
+
+      render json: {
+        message: 'unauthorized access'
+      }, status: :unauthorized
     end
 
     def totp_required?

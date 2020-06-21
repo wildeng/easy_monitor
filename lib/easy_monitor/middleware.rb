@@ -28,7 +28,7 @@ module EasyMonitor
 
     def call_app(env)
       @app.call(env)
-    rescue Exception => e
+    rescue StandardError => e
       if EasyMonitor::Engine.use_influxdb
         client.influxdb_write_exceptions(
           env, e
