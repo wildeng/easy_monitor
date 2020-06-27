@@ -10,63 +10,53 @@ module EasyMonitor
     def memcached_alive
       memcached_alive_message if memcached_alive?
     rescue EasyMonitor::Util::Errors::MemcachedNotWorking
-      log_message('Memcached is not working properly')
       memcached_error_message
     rescue EasyMonitor::Util::Errors::MemcachedNotUsed
-      log_message('Memcached is not set up')
       memcached_not_setup_message
     end
 
     def redis_alive
       redis_alive_message if connect_to_redis
     rescue Redis::CannotConnectError
-      log_message(
-        "Redis server at #{EasyMonitor::Engine.redis_url} is not responding"
-      )
-      redis_not_setup_message
+      redis_not_setup_message(EasyMonitor::Engine.redis_url)
     rescue StandardError => e
-      log_message(
-        "An error occurred #{EasyMonitor::Engine.redis_url} #{e.message}"
-      )
-      redis_error_message
+      redis_error_message(EasyMonitor::Engine.redis_url, e.message)
     end
 
     private
 
     def memcached_alive_message
-      render json: {
-        message: 'Memcached is alive'
-      }, status: 200
+      render json: { message: t('memcached.alive') }, status: 200
     end
 
     def memcached_not_setup_message
+      log_message(t('memcached.not_set_up'))
       render json: {
-        message: 'Memcached is not set up'
+        message: t('memcached.not_set_up')
       }, status: :service_unavailable
     end
 
     def memcached_error_message
+      log_message(t('memcached.error'))
       render json: {
-        message: 'Memcached is not working properly'
+        message: t('memcached.error')
       }, status: :internal_server_error
     end
 
     def redis_alive_message
-      render json: {
-        message: 'Redis is alive'
-      }, status: 200
+      render json: { message: t('redis.alive') }, status: 200
     end
 
-    def redis_not_setup_message
-      render json: {
-        message: 'Redis is not responding or not set up'
-      }, status: :service_unavailable
+    def redis_not_setup_message(redis_url)
+      msg = t('redis.not_set_up', redis_url: redis_url )
+      log_message(msg)
+      render json: { message: msg  }, status: :service_unavailable
     end
 
-    def redis_error_message
-      render json: {
-        message: 'There is something wrong with Redis'
-      }, status: :internal_server_error
+    def redis_error_message(redis_url, message)
+      msg = t('redis.error', redis_url: redis_url, message: message)
+      log_message(msg)
+      render json: { message: msg }, status: :internal_server_error
     end
 
     def connect_to_redis

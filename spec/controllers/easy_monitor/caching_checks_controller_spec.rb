@@ -19,7 +19,8 @@ module EasyMonitor
           get :redis_alive
           expect(response.code).to eq('503')
           body = JSON.parse(response.body)
-          expect(body['message']).to eq('Redis is not responding or not set up')
+          expect(body['message']).to start_with('Redis server at')
+          expect(body['message']).to end_with('not responding')
         end
 
         it 'respond with 500 and a message when catching an error' do
@@ -29,7 +30,7 @@ module EasyMonitor
           get :redis_alive
           expect(response.code).to eq('500')
           body = JSON.parse(response.body)
-          expect(body['message']).to eq('There is something wrong with Redis')
+          expect(body['message']).to start_with('An error occurred at')
         end
 
         it 'responds with 204 when hit' do
@@ -40,7 +41,7 @@ module EasyMonitor
           get :redis_alive
           expect(response.code).to eq('200')
           body = JSON.parse(response.body)
-          expect(body['message']).to eq('Redis is alive')
+          expect(body['message']).to eq(I18n.t('redis.alive'))
         end
       end
       context 'when checking Redis with totp auth' do
@@ -64,7 +65,7 @@ module EasyMonitor
             get :redis_alive, params: params
             expect(response.code).to eq('200')
             body = JSON.parse(response.body)
-            expect(body['message']).to eq('Redis is alive')
+            expect(body['message']).to eq(I18n.t('redis.alive'))
           end
 
           it 'responds with unauthorized' do
@@ -84,7 +85,7 @@ module EasyMonitor
             get :redis_alive, params: { totp_code: 'ISAWRONGCODE' }
             expect(response.code).to eq('401')
             body = JSON.parse(response.body)
-            expect(body['message']).to eq('unauthorized access')
+            expect(body['message']).to eq(I18n.t('unauthorized'))
           end
         end
       end
@@ -103,7 +104,7 @@ module EasyMonitor
           expect(EasyMonitor::Engine.use_memcached).to eq(false)
           expect(response.code).to eq('503')
           body = JSON.parse(response.body)
-          expect(body['message']).to eq('Memcached is not set up')
+          expect(body['message']).to eq(I18n.t('memcached.not_set_up'))
         end
 
         it 'responds with 503 and a message when not working' do
@@ -112,7 +113,7 @@ module EasyMonitor
           get :memcached_alive
           expect(response.code).to eq('500')
           body = JSON.parse(response.body)
-          expect(body['message']).to eq('Memcached is not working properly')
+          expect(body['message']).to eq(I18n.t('memcached.error'))
         end
 
         it 'responds with 200 and a message when hit' do
@@ -122,7 +123,7 @@ module EasyMonitor
           get :memcached_alive
           expect(response.code).to eq('200')
           body = JSON.parse(response.body)
-          expect(body['message']).to eq('Memcached is alive')
+          expect(body['message']).to eq(I18n.t('memcached.alive'))
         end
       end
     end
