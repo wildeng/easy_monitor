@@ -47,19 +47,19 @@ module EasyMonitor
       end
 
       describe 'GET Sidekiq alive' do
-        it 'responds with 200 and a message when not set or not working' do
+        it 'responds with 503 and a message when not set or not working' do
           get :sidekiq_alive
           expect(EasyMonitor::Engine.use_sidekiq).to eq(false)
           body = JSON.parse(response.body)
-          expect(response.code).to eq('200')
+          expect(response.code).to eq('503')
           expect(body['message']).to eq('Sidekiq is not responding or not set')
         end
 
-        it 'responds with 200 and a message when high latency' do
+        it 'responds with 408 and a message when high latency' do
           high_latency
           get :sidekiq_alive
           body = JSON.parse(response.body)
-          expect(response.code).to eq('200')
+          expect(response.code).to eq('408')
           expect(body['message']).to eq('Sidekiq is experiencing a high latency')
         end
 

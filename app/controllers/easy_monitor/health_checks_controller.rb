@@ -34,10 +34,11 @@ module EasyMonitor
       }, status: 200
     end
 
+    # returning a request timeout 504
     def sidekiq_high_latency_message
       render json: {
         message: 'Sidekiq is experiencing a high latency'
-      }, status: 200
+      }, status: :request_timeout
     end
 
     def sidekiq_high_queue_message
@@ -46,10 +47,11 @@ module EasyMonitor
       }, status: 200
     end
 
+    # return a 503 status code when not available
     def sidekiq_error_message
       render json: {
         message: 'Sidekiq is not responding or not set'
-      }, status: 200
+      }, status: :service_unavailable
     end
 
     def connect_to_sidekiq

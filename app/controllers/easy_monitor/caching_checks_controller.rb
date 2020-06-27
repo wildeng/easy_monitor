@@ -8,13 +8,13 @@ module EasyMonitor
     protect_from_forgery
 
     def memcached_alive
-      head :no_content if memcached_alive?
+      memcached_alive_message if memcached_alive?
     rescue EasyMonitor::Util::Errors::MemcachedNotWorking
-      log_message('Memcached is not available')
-      head :service_unavailable
+      log_message('Memcached is not working properly')
+      memcached_error_message
     rescue EasyMonitor::Util::Errors::MemcachedNotUsed
       log_message('Memcached is not set up')
-      head :not_implemented
+      memcached_not_setup_message
     end
 
     def redis_alive
@@ -33,6 +33,24 @@ module EasyMonitor
 
     private
 
+    def memcached_alive_message
+      render json: {
+        message: 'Memcached is alive'
+      }, status: 200
+    end
+
+    def memcached_not_setup_message
+      render json: {
+        message: 'Memcached is not set up'
+      }, status: :service_unavailable
+    end
+
+    def memcached_error_message
+      render json: {
+        message: 'Memcached is not working properly'
+      }, status: :internal_server_error
+    end
+
     def redis_alive_message
       render json: {
         message: 'Redis is alive'
@@ -42,13 +60,13 @@ module EasyMonitor
     def redis_not_setup_message
       render json: {
         message: 'Redis is not responding or not set up'
-      }, status: 200
+      }, status: :service_unavailable
     end
 
     def redis_error_message
       render json: {
         message: 'There is something wrong with Redis'
-      }, status: 200
+      }, status: :internal_server_error
     end
 
     def connect_to_redis
