@@ -9,20 +9,17 @@ module EasyMonitor
 
     # heartbeat of the application
     def alive
-      render json: { message: 'System is alive' }, status: 200
+      render json: { message: t('alive') }, status: 200
     end
 
     # TODO: check the openapi specification and take a look if this is compliant
     def sidekiq_alive
       sidekiq_alive_message if connect_to_sidekiq
     rescue EasyMonitor::Util::Errors::HighLatencyError
-      EasyMonitor::Engine.logger.error('Sidekiq is experiencing a high latency')
       sidekiq_high_latency_message
     rescue EasyMonitor::Util::Errors::HighQueueNumberError
-      EasyMonitor::Engine.logger.error('Too many jobs enqueued in Sidekiq')
       sidekiq_high_queue_message
     rescue StandardError
-      EasyMonitor::Engine.logger.error('Sidekiq is not responding or not set')
       sidekiq_error_message
     end
 
@@ -30,27 +27,30 @@ module EasyMonitor
 
     def sidekiq_alive_message
       render json: {
-        message: 'Sidekiq is alive'
+        message: t('sidekiq.alive')
       }, status: 200
     end
 
     # returning a request timeout 504
     def sidekiq_high_latency_message
+      log_message(t('sidekiq.high_latency'))
       render json: {
-        message: 'Sidekiq is experiencing a high latency'
+        message: t('sidekiq.high_latency')
       }, status: :request_timeout
     end
 
     def sidekiq_high_queue_message
+      log_message(t('sidekiq.high_queue'))
       render json: {
-        message: 'Too many jobs enqueued in Sidekiq'
+        message: t('sidekiq.high_queue')
       }, status: 200
     end
 
     # return a 503 status code when not available
     def sidekiq_error_message
+      log_message(t('sidekiq.not_set_up'))
       render json: {
-        message: 'Sidekiq is not responding or not set'
+        message: t('sidekiq.not_set_up')
       }, status: :service_unavailable
     end
 

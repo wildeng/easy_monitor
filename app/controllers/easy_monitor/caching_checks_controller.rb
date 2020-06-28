@@ -48,9 +48,9 @@ module EasyMonitor
     end
 
     def redis_not_setup_message(redis_url)
-      msg = t('redis.not_set_up', redis_url: redis_url )
+      msg = t('redis.not_set_up', redis_url: redis_url)
       log_message(msg)
-      render json: { message: msg  }, status: :service_unavailable
+      render json: { message: msg }, status: :service_unavailable
     end
 
     def redis_error_message(redis_url, message)

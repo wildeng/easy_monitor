@@ -12,14 +12,14 @@ module EasyMonitor
         get :alive
         expect(response.code).to eq('200')
         body = JSON.parse(response.body)
-        expect(body['message']).to eq('System is alive')
+        expect(body['message']).to eq(I18n.t('alive'))
       end
 
       it 'responds with 200 when json' do
         get :alive, format: 'json'
         message = JSON.parse(response.body)
         expect(response.code).to eq('200')
-        expect(message['message']).to eq('System is alive')
+        expect(message['message']).to eq(I18n.t('alive'))
       end
     end
 
@@ -52,7 +52,7 @@ module EasyMonitor
           expect(EasyMonitor::Engine.use_sidekiq).to eq(false)
           body = JSON.parse(response.body)
           expect(response.code).to eq('503')
-          expect(body['message']).to eq('Sidekiq is not responding or not set')
+          expect(body['message']).to eq(I18n.t('sidekiq.not_set_up'))
         end
 
         it 'responds with 408 and a message when high latency' do
@@ -60,7 +60,7 @@ module EasyMonitor
           get :sidekiq_alive
           body = JSON.parse(response.body)
           expect(response.code).to eq('408')
-          expect(body['message']).to eq('Sidekiq is experiencing a high latency')
+          expect(body['message']).to eq(I18n.t('sidekiq.high_latency'))
         end
 
         it 'responds with 200 and a message when high queue' do
@@ -68,7 +68,7 @@ module EasyMonitor
           get :sidekiq_alive
           body = JSON.parse(response.body)
           expect(response.code).to eq('200')
-          expect(body['message']).to eq('Too many jobs enqueued in Sidekiq')
+          expect(body['message']).to eq(I18n.t('sidekiq.high_queue'))
         end
 
         it 'responds with 200 and a message when alive' do
@@ -76,7 +76,7 @@ module EasyMonitor
           get :sidekiq_alive
           body = JSON.parse(response.body)
           expect(response.code).to eq('200')
-          expect(body['message']).to eq('Sidekiq is alive')
+          expect(body['message']).to eq(I18n.t('sidekiq.alive'))
         end
       end
     end

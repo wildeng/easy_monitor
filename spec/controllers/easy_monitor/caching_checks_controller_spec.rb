@@ -99,7 +99,7 @@ module EasyMonitor
       end
 
       describe 'GET memcached alive' do
-        it 'responds with 501 and a message when not used' do
+        it 'responds with 503 and a message when not used' do
           get :memcached_alive
           expect(EasyMonitor::Engine.use_memcached).to eq(false)
           expect(response.code).to eq('503')
@@ -107,7 +107,7 @@ module EasyMonitor
           expect(body['message']).to eq(I18n.t('memcached.not_set_up'))
         end
 
-        it 'responds with 503 and a message when not working' do
+        it 'responds with 500 and a message when not working' do
           EasyMonitor::Engine.use_memcached = true
           memcached_alive(false)
           get :memcached_alive
