@@ -14,3 +14,4 @@ en:
     not_set_up: 'Sidekiq is not responding or not set'
     high_latency: 'Sidekiq is experiencing a high latency'
     high_queue: 'Too many jobs enqueued in Sidekiq'
+    error: 'Sidekiq is not working properly'

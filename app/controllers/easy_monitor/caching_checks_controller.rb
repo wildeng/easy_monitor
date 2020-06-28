@@ -9,10 +9,10 @@ module EasyMonitor
 
     def memcached_alive
       memcached_alive_message if memcached_alive?
-    rescue EasyMonitor::Util::Errors::MemcachedNotWorking
-      memcached_error_message
-    rescue EasyMonitor::Util::Errors::MemcachedNotUsed
-      memcached_not_setup_message
+    rescue EasyMonitor::Util::Errors::NotWorking => e
+      memcached_error_message(e)
+    rescue EasyMonitor::Util::Errors::NotUsed => e
+      memcached_not_setup_message(e)
     end
 
     def redis_alive
@@ -29,17 +29,17 @@ module EasyMonitor
       render json: { message: t('memcached.alive') }, status: 200
     end
 
-    def memcached_not_setup_message
-      log_message(t('memcached.not_set_up'))
+    def memcached_not_setup_message(error)
+      log_message(error.message)
       render json: {
-        message: t('memcached.not_set_up')
+        message: error.message
       }, status: :service_unavailable
     end
 
-    def memcached_error_message
-      log_message(t('memcached.error'))
+    def memcached_error_message(error)
+      log_message(error.message)
       render json: {
-        message: t('memcached.error')
+        message: error.message
       }, status: :internal_server_error
     end
 
@@ -64,10 +64,12 @@ module EasyMonitor
     end
 
     def memcached_alive?
-      raise EasyMonitor::Util::Errors::MemcachedNotUsed\
-        unless EasyMonitor::Engine.use_memcached
-      raise EasyMonitor::Util::Errors::MemcachedNotWorking\
-        unless EasyMonitor::Engine.cache
+      unless EasyMonitor::Engine.use_memcached
+        raise EasyMonitor::Util::Errors::NotUsed, t('memcached.not_set_up')
+      end
+      unless EasyMonitor::Engine.cache
+        raise EasyMonitor::Util::Errors::NotWorking, t('memcached.error')
+      end
 
       EasyMonitor::Util::Connectors::MemcachedConnector.new(
         EasyMonitor::Engine.cache

@@ -18,10 +18,10 @@ module EasyMonitor
         # @return [boolean] true if Sidekiq checks are fine
         def alive?
           raise StandardError unless EasyMonitor::Engine.use_sidekiq
-          raise EasyMonitor::Util::Errors::HighLatencyError if high_latency?
-          raise EasyMonitor::Util::Errors::HighQueueNumberError if high_queue_number?
-          raise EasyMonitor::Util::Errors::StandarError unless processing?
 
+          latency_checks
+          queue_checks
+          processes_checks
           true
         end
 
@@ -31,6 +31,30 @@ module EasyMonitor
 
         def stats
           @stats = Sidekiq::Stats.new
+        end
+
+        def latency_checks
+          return unless high_latency?
+
+          raise EasyMonitor::Util::Errors::HighLatencyError.new(
+            I18n.t('sidekiq.high_latency'), SidekiqConnector.class.name
+          )
+        end
+
+        def queue_checks
+          return unless high_queue_number?
+
+          raise EasyMonitor::Util::Errors::HighQueueNumberError.new(
+            I18n.t('sidekiq.high_queue'), SidekiqConnector.class.name
+          )
+        end
+
+        def processes_checks
+          return if processing?
+
+          raise EasyMonitor::Util::Errors::NotWorking.new(
+            I18n.t('sidekiq.error'), SidekiqConnector.class.name
+          )
         end
 
         def high_latency?

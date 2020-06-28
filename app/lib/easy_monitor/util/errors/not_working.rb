@@ -3,8 +3,8 @@
 module EasyMonitor
   module Util
     module Errors
-      class MemcachedNotUsed < StandardError
-        def initialize(msg = 'An error occurred', class_name = nil)
+      class NotWorking < StandardError
+        def initialize(msg = 'Not working error', class_name = nil)
           msg += " for class #{class_name}" if class_name
           super(msg)
         end

@@ -34,7 +34,9 @@ module EasyMonitor
         allow_any_instance_of(
           EasyMonitor::Util::Connectors::SidekiqConnector
         ).to receive(:alive?).and_raise(
-          EasyMonitor::Util::Errors::HighLatencyError
+          EasyMonitor::Util::Errors::HighLatencyError.new(
+            I18n.t('sidekiq.high_latency')
+          )
         )
       end
 
@@ -42,7 +44,9 @@ module EasyMonitor
         allow_any_instance_of(
           EasyMonitor::Util::Connectors::SidekiqConnector
         ).to receive(:alive?).and_raise(
-          EasyMonitor::Util::Errors::HighQueueNumberError
+          EasyMonitor::Util::Errors::HighQueueNumberError.new(
+            I18n.t('sidekiq.high_queue')
+          )
         )
       end
 
