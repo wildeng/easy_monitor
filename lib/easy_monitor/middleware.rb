@@ -8,10 +8,6 @@ module EasyMonitor
       @app = app
     end
 
-    # Just started experimenting with the metrics
-    # The middleware should collect all the necessary metrics and save them
-    # Persistence mechanism has not been chosen yet
-
     def call(env)
       request = Rack::Request.new(env)
       request_started = client.time_millis
