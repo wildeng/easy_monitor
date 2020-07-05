@@ -36,6 +36,7 @@ module EasyMonitor
       mattr_accessor :influxdb_host
       mattr_accessor :influxdb_port
       mattr_accessor :use_influxdb
+      mattr_accessor :use_active_record
 
       self.redis_url = DEFAULT_REDIS_URL
       self.redis_port = DEFAULT_REDIS_PORT
@@ -52,6 +53,7 @@ module EasyMonitor
       self.influxdb_host = DEFAULT_INFLUXDB_HOST
       self.influxdb_port = DEFAULT_INFLUXDB_PORT
       self.use_influxdb = false
+      self.use_active_record = false
     end
 
     def self.setup

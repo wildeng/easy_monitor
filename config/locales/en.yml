@@ -1,6 +1,10 @@
 en:
   unauthorized: 'Unauthorized access'
   alive: 'System is alive'
+  active_record:
+    not_set_up: 'ActiveRecord checks are not set up'
+    not_alive: 'Database is not connected'
+    alive: 'Database is connected'
   redis:
     alive: 'Redis is alive'
     not_set_up: "Redis server at %{redis_url} is not responding"

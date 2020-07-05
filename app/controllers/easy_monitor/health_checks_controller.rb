@@ -12,6 +12,13 @@ module EasyMonitor
       render json: { message: t('alive') }, status: 200
     end
 
+    def active_record_alive
+      active_record_alive_message if active_record_connection
+      active_record_not_alive_message unless active_record_connection
+    rescue
+      active_record_not_set_up
+    end
+
     # TODO: check the openapi specification and take a look if this is compliant
     def sidekiq_alive
       sidekiq_alive_message if connect_to_sidekiq
@@ -24,6 +31,24 @@ module EasyMonitor
     end
 
     private
+
+    def active_record_alive_message
+      render json: {
+        message: t('active_record_alive.alive')
+      }, status: 200
+    end
+
+    def active_record_not_alive_message
+      render json: {
+        message: t('active_record_alive.not_alive')
+      }, status: 503
+    end
+
+    def active_record_not_set_up
+      render json: {
+        message: t('active_record_alive.not_set_up')
+      }, status: 503
+    end
 
     def sidekiq_alive_message
       render json: {
@@ -52,6 +77,10 @@ module EasyMonitor
       render json: {
         message: t('sidekiq.not_set_up')
       }, status: :service_unavailable
+    end
+
+    def active_record_connection
+      EasyMonitor.database_alive?
     end
 
     def connect_to_sidekiq
