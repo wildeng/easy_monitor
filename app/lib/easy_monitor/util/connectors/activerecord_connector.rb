@@ -1,4 +1,4 @@
-#frozen_string_literal: true
+# frozen_string_literal: true
 
 module EasyMonitor
   module Util
@@ -12,6 +12,7 @@ module EasyMonitor
 
         def database_alive?
           raise StandardError unless EasyMonitor::Engine.use_active_record
+
           base.connection.active?
         end
       end

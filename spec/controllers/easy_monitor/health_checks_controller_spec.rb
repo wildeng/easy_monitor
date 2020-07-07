@@ -99,11 +99,10 @@ module EasyMonitor
           ).to receive(:database_alive?).and_raise(StandardError)
         end
 
-        it 'retuns a 200 with a message' do
-          get :active_record_alive
-          body = JSON.parse(response.body)
-          expect(response.code).to eq('200')
-          expect(body['message']).to eq(I18n.t('active_record.alive'))
+        def use_active_record(use = false)
+          EasyMonitor::Engine.setup do |config|
+            config.use_active_record = use
+          end
         end
 
         it 'retuns a 503 and a message when not set up' do
@@ -115,13 +114,22 @@ module EasyMonitor
           expect(body['message']).to eq(I18n.t('active_record.not_set_up'))
         end
 
+        it 'retuns a 200 with a message' do
+          use_active_record(true)
+          get :active_record_alive
+          body = JSON.parse(response.body)
+          expect(response.code).to eq('200')
+          expect(body['message']).to eq(I18n.t('active_record.alive'))
+        end
+
         it 'retuns a 503 and a message when not working' do
+          use_active_record(true)
           database_not_alive
           get :active_record_alive
-          expect(EasyMonitor::Engine.use_active_record).to eq(false)
+          expect(EasyMonitor::Engine.use_active_record).to eq(true)
           body = JSON.parse(response.body)
           expect(response.code).to eq('503')
-          expect(body['message']).to eq(I18n.t('active_record.not_set_up'))
+          expect(body['message']).to eq(I18n.t('active_record.not_alive'))
         end
       end
     end

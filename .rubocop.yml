@@ -6,7 +6,7 @@ AllCops:
     - !ruby/regexp /old_and_unused\.rb$/
 
 Metrics/BlockLength:
-  Max: 110
+  Max: 120
 
 Metrics/LineLength:
   Max: 100

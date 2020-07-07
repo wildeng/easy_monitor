@@ -15,7 +15,7 @@ module EasyMonitor
     def active_record_alive
       active_record_alive_message if active_record_connection
       active_record_not_alive_message unless active_record_connection
-    rescue
+    rescue StandardError
       active_record_not_set_up
     end
 
@@ -34,19 +34,19 @@ module EasyMonitor
 
     def active_record_alive_message
       render json: {
-        message: t('active_record_alive.alive')
+        message: t('active_record.alive')
       }, status: 200
     end
 
     def active_record_not_alive_message
       render json: {
-        message: t('active_record_alive.not_alive')
+        message: t('active_record.not_alive')
       }, status: 503
     end
 
     def active_record_not_set_up
       render json: {
-        message: t('active_record_alive.not_set_up')
+        message: t('active_record.not_set_up')
       }, status: 503
     end
 
