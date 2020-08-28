@@ -1,0 +1,21 @@
+en:
+  unauthorized: 'Unauthorized access'
+  alive: 'System is alive'
+  active_record:
+    not_set_up: 'ActiveRecord checks are not set up'
+    not_alive: 'Database is not connected'
+    alive: 'Database is connected'
+  redis:
+    alive: 'Redis is alive'
+    not_set_up: "Redis server at %{redis_url} is not responding"
+    error: "An error occurred at %{redis_url} %{message}"
+  memcached:
+    alive: 'Memcached is alive'
+    not_set_up: "Memcached is not set up"
+    error: "Memcached is not working properly"
+  sidekiq:
+    alive: 'Sidekiq is alive'
+    not_set_up: 'Sidekiq is not responding or not set'
+    high_latency: 'Sidekiq is experiencing a high latency'
+    high_queue: 'Too many jobs enqueued in Sidekiq'
+    error: 'Sidekiq is not working properly'

@@ -21,22 +21,26 @@ To check if Sidekiq is alive:
 ```bash
 curl -v http://localhost:3000/easy_monitor/health_checks/sidekiq_alive
 ```
+To check if ActiveRecord is working:
+
+```bash
+curl -v http://localhost:3000/easy_monitor/health_checks/active_record_alive
+```
+
+All responses come back with an HTTP code and a message using a JSON format, so that any kind of client can be used with it.
+There's a WIP part that uses TOTP to validate the call adding a security layer.
+TODO: a file with a list of trusted IP from where the request can come.
 
 ## Installation
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'easy_monitor'
+gem 'easy_monitor', github: 'git://github.com/wildeng/easy_monitor.git.', tag: "0.2.0"
 ```
 
 And then execute:
 ```bash
 $ bundle
-```
-
-Or install it yourself as:
-```bash
-$ gem install easy_monitor
 ```
 
 After installing the gem, open your Rails application routes file and add:
@@ -66,7 +70,7 @@ There's a WIP rake task that will create an influxdb called easy_monitor and you
 own host and port. It defaults to localhost and 8086:
 
 ```bash
-bundle exec rake app:easy_monitor:easydb 
+bundle exec rake app:easy_monitor:easydb
 ```
 
 ## Docker version for development

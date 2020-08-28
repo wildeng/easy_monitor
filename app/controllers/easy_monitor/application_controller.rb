@@ -21,7 +21,7 @@ module EasyMonitor
       return if totp.verify(params[:totp_code])
 
       render json: {
-        message: 'unauthorized access'
+        message: t('unauthorized')
       }, status: :unauthorized
     end
 

@@ -12,14 +12,14 @@ module EasyMonitor
         get :alive
         expect(response.code).to eq('200')
         body = JSON.parse(response.body)
-        expect(body['message']).to eq('System is alive')
+        expect(body['message']).to eq(I18n.t('alive'))
       end
 
       it 'responds with 200 when json' do
         get :alive, format: 'json'
         message = JSON.parse(response.body)
         expect(response.code).to eq('200')
-        expect(message['message']).to eq('System is alive')
+        expect(message['message']).to eq(I18n.t('alive'))
       end
     end
 
@@ -34,7 +34,9 @@ module EasyMonitor
         allow_any_instance_of(
           EasyMonitor::Util::Connectors::SidekiqConnector
         ).to receive(:alive?).and_raise(
-          EasyMonitor::Util::Errors::HighLatencyError
+          EasyMonitor::Util::Errors::HighLatencyError.new(
+            I18n.t('sidekiq.high_latency')
+          )
         )
       end
 
@@ -42,25 +44,27 @@ module EasyMonitor
         allow_any_instance_of(
           EasyMonitor::Util::Connectors::SidekiqConnector
         ).to receive(:alive?).and_raise(
-          EasyMonitor::Util::Errors::HighQueueNumberError
+          EasyMonitor::Util::Errors::HighQueueNumberError.new(
+            I18n.t('sidekiq.high_queue')
+          )
         )
       end
 
       describe 'GET Sidekiq alive' do
-        it 'responds with 200 and a message when not set or not working' do
+        it 'responds with 503 and a message when not set or not working' do
           get :sidekiq_alive
           expect(EasyMonitor::Engine.use_sidekiq).to eq(false)
           body = JSON.parse(response.body)
-          expect(response.code).to eq('200')
-          expect(body['message']).to eq('Sidekiq is not responding or not set')
+          expect(response.code).to eq('503')
+          expect(body['message']).to eq(I18n.t('sidekiq.not_set_up'))
         end
 
-        it 'responds with 200 and a message when high latency' do
+        it 'responds with 408 and a message when high latency' do
           high_latency
           get :sidekiq_alive
           body = JSON.parse(response.body)
-          expect(response.code).to eq('200')
-          expect(body['message']).to eq('Sidekiq is experiencing a high latency')
+          expect(response.code).to eq('408')
+          expect(body['message']).to eq(I18n.t('sidekiq.high_latency'))
         end
 
         it 'responds with 200 and a message when high queue' do
@@ -68,7 +72,7 @@ module EasyMonitor
           get :sidekiq_alive
           body = JSON.parse(response.body)
           expect(response.code).to eq('200')
-          expect(body['message']).to eq('Too many jobs enqueued in Sidekiq')
+          expect(body['message']).to eq(I18n.t('sidekiq.high_queue'))
         end
 
         it 'responds with 200 and a message when alive' do
@@ -76,7 +80,56 @@ module EasyMonitor
           get :sidekiq_alive
           body = JSON.parse(response.body)
           expect(response.code).to eq('200')
-          expect(body['message']).to eq('Sidekiq is alive')
+          expect(body['message']).to eq(I18n.t('sidekiq.alive'))
+        end
+      end
+    end
+
+    context 'when checking ActiveRecord' do
+      describe 'GET ActiveRecordAlive' do
+        let(:database_not_alive) do
+          allow_any_instance_of(
+            EasyMonitor::Util::Connectors::ActiverecordConnector
+          ).to receive(:database_alive?).and_return(false)
+        end
+
+        let(:checks_not_set_up) do
+          allow_any_instance_of(
+            EasyMonitor::Util::Connectors::ActiverecordConnector
+          ).to receive(:database_alive?).and_raise(StandardError)
+        end
+
+        def use_active_record(use = false)
+          EasyMonitor::Engine.setup do |config|
+            config.use_active_record = use
+          end
+        end
+
+        it 'retuns a 503 and a message when not set up' do
+          checks_not_set_up
+          get :active_record_alive
+          expect(EasyMonitor::Engine.use_active_record).to eq(false)
+          body = JSON.parse(response.body)
+          expect(response.code).to eq('503')
+          expect(body['message']).to eq(I18n.t('active_record.not_set_up'))
+        end
+
+        it 'retuns a 200 with a message' do
+          use_active_record(true)
+          get :active_record_alive
+          body = JSON.parse(response.body)
+          expect(response.code).to eq('200')
+          expect(body['message']).to eq(I18n.t('active_record.alive'))
+        end
+
+        it 'retuns a 503 and a message when not working' do
+          use_active_record(true)
+          database_not_alive
+          get :active_record_alive
+          expect(EasyMonitor::Engine.use_active_record).to eq(true)
+          body = JSON.parse(response.body)
+          expect(response.code).to eq('503')
+          expect(body['message']).to eq(I18n.t('active_record.not_alive'))
         end
       end
     end
