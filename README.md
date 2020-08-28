@@ -35,7 +35,7 @@ TODO: a file with a list of trusted IP from where the request can come.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'easy_monitor', github: 'wildeng/easy_monitor'
+gem 'easy_monitor', github: 'git://github.com/wildeng/easy_monitor.git.', tag: "0.2.0"
 ```
 
 And then execute:
@@ -70,7 +70,7 @@ There's a WIP rake task that will create an influxdb called easy_monitor and you
 own host and port. It defaults to localhost and 8086:
 
 ```bash
-bundle exec rake app:easy_monitor:easydb 
+bundle exec rake app:easy_monitor:easydb
 ```
 
 ## Docker version for development
