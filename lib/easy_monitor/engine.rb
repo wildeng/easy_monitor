@@ -2,10 +2,12 @@
 
 require 'easy_monitor/log/easy_monitor_logger'
 require 'easy_monitor/middleware'
+require 'easy_monitor/endpoint_monitor'
 
 module EasyMonitor
   class Engine < ::Rails::Engine
     config.app_middleware.use EasyMonitor::Middleware
+    config.app_middleware.use EasyMonitor::EndpointMonitor
 
     isolate_namespace EasyMonitor
 
