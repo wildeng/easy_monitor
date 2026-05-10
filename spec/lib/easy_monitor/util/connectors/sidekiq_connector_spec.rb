@@ -45,9 +45,9 @@ module EasyMonitor
             end
 
             it 'return sidekiq stats' do
-              stats = double(enqueued: 10, processes_size: 2)
-              allow_any_instance_of(Sidekiq::Stats).to receive(:fetch_stats!).and_return(stats)
-              expect(described_class.instance.stats.class).to eq(Sidekiq::Stats)
+              stats_double = instance_double(Sidekiq::Stats, enqueued: 10, processes_size: 2)
+              allow(Sidekiq::Stats).to receive(:new).and_return(stats_double)
+              expect(described_class.instance.stats.enqueued).to eq(10)
             end
 
             it 'returns false if latency is low' do

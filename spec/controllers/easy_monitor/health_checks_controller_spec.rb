@@ -96,7 +96,7 @@ module EasyMonitor
         let(:checks_not_set_up) do
           allow_any_instance_of(
             EasyMonitor::Util::Connectors::ActiverecordConnector
-          ).to receive(:database_alive?).and_raise(StandardError)
+          ).to receive(:database_alive?).and_raise(EasyMonitor::Util::Errors::NotSetUp)
         end
 
         def use_active_record(use = false)

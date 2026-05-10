@@ -16,11 +16,5 @@ module EasyMonitor
     def sidekiq_alive?
       EasyMonitor::Util::Connectors::SidekiqConnector.instance.alive?
     end
-
-    def sidekiq_check; end
-
-    def sidekiq_active_jobs; end
-
-    def sidekiq_all_queues; end
   end
 end

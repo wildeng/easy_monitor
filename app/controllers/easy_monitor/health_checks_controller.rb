@@ -15,7 +15,7 @@ module EasyMonitor
     def active_record_alive
       active_record_alive_message if active_record_connection
       active_record_not_alive_message unless active_record_connection
-    rescue StandardError
+    rescue EasyMonitor::Util::Errors::NotSetUp
       active_record_not_set_up
     end
 
@@ -26,7 +26,7 @@ module EasyMonitor
       sidekiq_high_latency_message(e)
     rescue EasyMonitor::Util::Errors::HighQueueNumberError => e
       sidekiq_high_queue_message(e)
-    rescue StandardError
+    rescue EasyMonitor::Util::Errors::NotSetUp
       sidekiq_error_message
     end
 

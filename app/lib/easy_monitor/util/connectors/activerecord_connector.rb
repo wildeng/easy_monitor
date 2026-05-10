@@ -11,7 +11,7 @@ module EasyMonitor
         end
 
         def database_alive?
-          raise StandardError unless EasyMonitor::Engine.use_active_record
+          raise EasyMonitor::Util::Errors::NotSetUp unless EasyMonitor::Engine.use_active_record
 
           base.connection.active?
         end

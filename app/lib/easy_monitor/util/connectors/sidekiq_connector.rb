@@ -17,7 +17,7 @@ module EasyMonitor
         #
         # @return [boolean] true if Sidekiq checks are fine
         def alive?
-          raise StandardError unless EasyMonitor::Engine.use_sidekiq
+          raise EasyMonitor::Util::Errors::NotSetUp unless EasyMonitor::Engine.use_sidekiq
 
           latency_checks
           queue_checks

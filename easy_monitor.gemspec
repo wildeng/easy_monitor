@@ -24,7 +24,11 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
+  spec.add_dependency 'benchmark'
+  spec.add_dependency 'drb'
   spec.add_dependency 'influxdb'
+  spec.add_dependency 'logger'
+  spec.add_dependency 'mutex_m'
   spec.add_dependency 'rails', '~> 6.0.0'
   spec.add_dependency 'redis'
   spec.add_dependency 'rotp'
@@ -38,6 +42,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-performance'
   spec.add_development_dependency 'simplecov'
-  spec.add_development_dependency 'sqlite3'
+  spec.add_development_dependency 'sqlite3', '~> 1.4'
   spec.add_development_dependency 'webmock'
 end

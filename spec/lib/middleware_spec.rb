@@ -10,6 +10,7 @@ RSpec.describe EasyMonitor::Middleware do
   let(:app) { MockRackApp.new }
   let(:subject) { described_class.new(app) }
   let(:request) { Rack::MockRequest.new(subject) }
+  let(:influxdb_double) { instance_double(EasyMonitor::Influxdb::Client, time_millis: 1_000_000, influxdb_write_actions: true, influxdb_write_exceptions: true) }
   let(:client) do
     EasyMonitor::Influxdb::Client.new(
       time_precision: 'ms'
@@ -18,17 +19,11 @@ RSpec.describe EasyMonitor::Middleware do
 
   context 'when influxdb connection is active' do
     before do
-      EasyMonitor::Engine.config do |conf|
+      EasyMonitor::Engine.setup do |conf|
         conf.use_influxdb = true
       end
 
-      allow_any_instance_of(EasyMonitor::Influxdb::Client).to receive(
-        :influxdb_write_actions
-      ).and_return(true)
-
-      allow_any_instance_of(EasyMonitor::Influxdb::Client).to receive(
-        :influxdb_write_exceptions
-      ).and_return(true)
+      allow(EasyMonitor::Influxdb::Client).to receive(:new).and_return(influxdb_double)
     end
 
     describe 'called with a GET request' do

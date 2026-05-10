@@ -72,6 +72,63 @@ own host and port. It defaults to localhost and 8086:
 ```bash
 bundle exec rake app:easy_monitor:easydb
 ```
+## Fixing Nokogiri on Apple Silicon
+
+When bundle install fails on an M4 Mac with errors like fatal error: 'nokogiri_gumbo.h' file not found or issues with openssl@1.1, it is usually due to stale Intel-based configuration paths.
+
+1. Clean Stale Configurations
+Remove any global or local build flags that might be forcing the compiler to look for Intel libraries (like OpenSSL 1.1).
+
+```bash
+bundle config unset build.nokogiri
+bundle config unset --global build.nokogiri
+```
+
+2. Install Native ARM Dependencies
+Ensure you have the Apple Silicon versions of the required system libraries via Homebrew.
+
+```bash
+brew install libxml2 libxslt openssl@3
+```
+
+3. Manual Native Gem Installation
+Manually install the gem while explicitly pointing to the ARM-native Homebrew prefixes. This bypasses Bundler's detection issues.
+
+```bash
+gem install nokogiri --version 1.19.3 -- \
+  --use-system-libraries \
+  --with-xml2-dir=$(brew --prefix libxml2) \
+  --with-xslt-dir=$(brew --prefix libxslt) \
+  --with-cflags="-I$(brew --prefix libxml2)/include" \
+  --with-ldflags="-L$(brew --prefix libxml2)/lib"
+```
+
+4. Lockfile Alignment
+Bundler will often try to re-compile if the Gemfile.lock allows the generic ruby platform. Force it to use the arm64-darwin platform.
+
+Open Gemfile.lock.
+
+Under the PLATFORMS section (at the bottom), remove ruby.
+
+Ensure arm64-darwin is present.
+
+Run the following:
+
+```bash
+# Tell bundler to prefer platform-specific gems
+bundle config set --local force_ruby_platform false
+
+# Finalize the install
+bundle install
+```
+
+5. Verification
+Confirm you are running the ARM-native version of the gem:
+
+```bash
+gem list nokogiri
+# Expected output: nokogiri (1.19.3 arm64-darwin)
+```
 
 ## Docker version for development
 
